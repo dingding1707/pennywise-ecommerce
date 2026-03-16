@@ -449,7 +449,7 @@ def checkout_payment():
         }
         return redirect(url_for('order_confirmation'))
     subtotal = cart_subtotal()
-    return render_template('checkout_payment.html', subtotal=subtotal, delivery=30.00, total=subtotal + 30.00, info=session.get('checkout_info', {}))
+    return render_template('checkout_payment.html', subtotal=subtotal, delivery=30.00, total=subtotal + 30.00, info=session.get('checkout_info', {}), cart=get_cart())
 
 @app.route('/order-confirmation')
 def order_confirmation():
