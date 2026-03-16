@@ -91,13 +91,13 @@
             <a href="/products{% if selected_category %}?category={{ selected_category }}{% else %}{% endif %}" 
                class="filter-chip {% if not selected_filter %}active{% endif %}">All</a>
             <a href="/products?filter=bestsellers{% if selected_category %}&category={{ selected_category }}{% endif %}" 
-               class="filter-chip {% if selected_filter == 'bestsellers' %}active{% endif %}">⭐ Bestsellers</a>
+               class="filter-chip {% if selected_filter == 'bestsellers' %}active{% endif %}"> Bestsellers</a>
             <a href="/products?filter=new{% if selected_category %}&category={{ selected_category }}{% endif %}" 
-               class="filter-chip {% if selected_filter == 'new' %}active{% endif %}">✨ New</a>
+               class="filter-chip {% if selected_filter == 'new' %}active{% endif %}"> New</a>
             <a href="/products?filter=value_sets{% if selected_category %}&category={{ selected_category }}{% endif %}" 
-               class="filter-chip {% if selected_filter == 'value_sets' %}active{% endif %}">🎁 Value Sets</a>
+               class="filter-chip {% if selected_filter == 'value_sets' %}active{% endif %}"> Value Sets</a>
             <a href="/products?filter=mini{% if selected_category %}&category={{ selected_category }}{% endif %}" 
-               class="filter-chip {% if selected_filter == 'mini' %}active{% endif %}">🔬 Mini</a>
+               class="filter-chip {% if selected_filter == 'mini' %}active{% endif %}"> Mini</a>
         </div>
         <div class="filter-divider"></div>
         <div class="filter-group">
