@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block title %}About Us | Pennywise Cosmetics{% endblock %}
+
+{% block extra_head %}
+<style>
+.about-hero {
+    background: linear-gradient(135deg, var(--light-pink), var(--pale-pink));
+    padding: 80px 24px; text-align: center; border-bottom: 1.5px solid var(--border);
+}
+.about-hero h1 { font-family: 'Playfair Display', serif; font-size: 2.5rem; font-weight: 700; margin-bottom: 16px; }
+.about-hero p { font-size: 1.05rem; color: var(--text-muted); max-width: 600px; margin: 0 auto; line-height: 1.8; }
+.about-content { padding: 80px 0; }
+.about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; margin-bottom: 80px; }
+.about-section-title { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; margin-bottom: 20px; }
+.about-text { font-size: 0.95rem; color: var(--text-muted); line-height: 1.8; margin-bottom: 16px; }
+.about-visual { background: var(--light-pink); border-radius: var(--radius); padding: 60px; text-align: center; font-size: 6rem; border: 1.5px solid var(--border); }
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; margin: 60px 0; }
+.stat-card { background: white; border-radius: var(--radius); border: 1.5px solid var(--border); padding: 32px; text-align: center; }
+.stat-number { font-family: 'Playfair Display', serif; font-size: 2.5rem; font-weight: 700; color: var(--hot-pink); }
+.stat-label { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; margin-top: 6px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="about-hero">
+    <h1>About Pennywise Cosmetics</h1>
+    <p>From humble beginnings to Trinidad & Tobago's largest health and beauty retail chain — our story is one of passion, perseverance, and an unwavering commitment to making beauty accessible to all.</p>
+</div>
+
+<div class="page-content about-content">
+    <div class="about-grid">
+        <div>
+            <h2 class="about-section-title">Our Story</h2>
+            <p class="about-text">The late Mr Lall Paladee began his journey to success from a very humble home. He would walk door to door selling pins and clips daily while his wife would help by earning some money as a seamstress.</p>
+            <p class="about-text">He won a bicycle in a raffle which he used to ride for many miles daily, still selling buttons and other haberdasheries door to door. Through hard work and dedication, he built what is now Trinidad & Tobago's premier health and beauty destination.</p>
+            <p class="about-text">Today, Pennywise Cosmetics operates multiple locations across Trinidad & Tobago, serving thousands of customers daily with the widest range of cosmetics, health products, and beauty supplies at the most competitive prices.</p>
+        </div>
+        <div class="about-visual"></div>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">10+</div>
+            <div class="stat-label">Store Locations in T&T</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">5000+</div>
+            <div class="stat-label">Products in Stock</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">30+</div>
+            <div class="stat-label">Years in Business</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">100K+</div>
+            <div class="stat-label">Happy Customers</div>
+        </div>
+    </div>
+
+    <div class="about-grid">
+        <div class="about-visual"></div>
+        <div>
+            <h2 class="about-section-title">Our Mission</h2>
+            <p class="about-text"><em>Beauty Wise | Health Wise | Price Wise</em></p>
+            <p class="about-text">Our mission is to make health and beauty products accessible to all Caribbean consumers, regardless of budget. We believe that everyone deserves to look and feel their best.</p>
+            <p class="about-text">As Director Dr. Shivum Paladee describes, <em>"We offer anything that makes people feel happy and beautiful."</em></p>
+            <a href="/products" class="btn btn-primary mt-3">Shop Our Collection</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

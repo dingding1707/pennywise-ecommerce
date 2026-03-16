@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% block title %}{% if selected_category %}{{ selected_category }} — {% endif %}Shop | Pennywise Cosmetics{% endblock %}
+
+{% block extra_head %}
+<style>
+.products-page { padding: 40px 0; }
+.page-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 32px; flex-wrap: wrap; gap: 16px;
+}
+.page-heading {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem; font-weight: 700;
+}
+.product-count { font-size: 0.85rem; color: var(--text-muted); margin-top: 4px; }
+
+/* Filters Bar */
+.filters-bar {
+    background: white; border: 1.5px solid var(--border);
+    border-radius: var(--radius); padding: 16px 20px;
+    display: flex; flex-wrap: wrap; gap: 12px;
+    align-items: center; margin-bottom: 28px;
+}
+.filter-group { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.filter-label { font-size: 0.8rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
+.filter-chip {
+    padding: 6px 14px; border-radius: 100px;
+    border: 1.5px solid var(--border); background: white;
+    font-family: 'Nunito', sans-serif; font-size: 0.78rem; font-weight: 700;
+    cursor: pointer; text-decoration: none; color: var(--text);
+    transition: all 0.2s; white-space: nowrap;
+}
+.filter-chip:hover, .filter-chip.active {
+    background: var(--hot-pink); color: white; border-color: var(--hot-pink);
+}
+.filter-divider { width: 1px; height: 24px; background: var(--border); }
+
+.sort-select {
+    margin-left: auto;
+    padding: 8px 14px; border-radius: 100px;
+    border: 1.5px solid var(--border);
+    font-family: 'Nunito', sans-serif; font-size: 0.82rem; font-weight: 600;
+    cursor: pointer; background: white; outline: none; color: var(--text);
+}
+
+/* Product Grid */
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 20px;
+}
+
+/* Empty state */
+.empty-state {
+    text-align: center; padding: 80px 20px; color: var(--text-muted);
+}
+.empty-state .empty-icon { font-size: 4rem; margin-bottom: 16px; }
+.empty-state h3 { font-size: 1.2rem; margin-bottom: 8px; color: var(--text); }
+.empty-state p { font-size: 0.9rem; margin-bottom: 24px; }
+
+@media (max-width: 600px) {
+    .products-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-content products-page">
+    <div class="page-header">
+        <div>
+            <h1 class="page-heading">
+                {% if search %}Search: "{{ search }}"
+                {% elif selected_category %}{{ selected_category }}
+                {% elif selected_filter == 'bestsellers' %}Bestsellers
+                {% elif selected_filter == 'new' %}New Arrivals
+                {% elif selected_filter == 'value_sets' %}Value Sets
+                {% elif selected_filter == 'mini' %}Mini Sizes
+                {% else %}All Products{% endif %}
+            </h1>
+            <p class="product-count">{{ products|length }} product{{ 's' if products|length != 1 }}</p>
+        </div>
+        {% if search %}
+            <a href="/products" class="btn btn-outline btn-sm">Clear Search</a>
+        {% endif %}
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-bar">
+        <div class="filter-group">
+            <span class="filter-label">Filter:</span>
+            <a href="/products{% if selected_category %}?category={{ selected_category }}{% else %}{% endif %}" 
+               class="filter-chip {% if not selected_filter %}active{% endif %}">All</a>
+            <a href="/products?filter=bestsellers{% if selected_category %}&category={{ selected_category }}{% endif %}" 
+               class="filter-chip {% if selected_filter == 'bestsellers' %}active{% endif %}">⭐ Bestsellers</a>
+            <a href="/products?filter=new{% if selected_category %}&category={{ selected_category }}{% endif %}" 
+               class="filter-chip {% if selected_filter == 'new' %}active{% endif %}">✨ New</a>
+            <a href="/products?filter=value_sets{% if selected_category %}&category={{ selected_category }}{% endif %}" 
+               class="filter-chip {% if selected_filter == 'value_sets' %}active{% endif %}">🎁 Value Sets</a>
+            <a href="/products?filter=mini{% if selected_category %}&category={{ selected_category }}{% endif %}" 
+               class="filter-chip {% if selected_filter == 'mini' %}active{% endif %}">🔬 Mini</a>
+        </div>
+        <div class="filter-divider"></div>
+        <div class="filter-group">
+            <span class="filter-label">Category:</span>
+            <a href="/products" class="filter-chip {% if not selected_category %}active{% endif %}">All</a>
+            {% for cat in all_categories %}
+            <a href="/products?category={{ cat.category }}" 
+               class="filter-chip {% if selected_category == cat.category %}active{% endif %}">{{ cat.category }}</a>
+            {% endfor %}
+        </div>
+        <select class="sort-select" onchange="window.location=this.value">
+            <option value="/products?{% if selected_category %}category={{ selected_category }}&{% endif %}{% if selected_filter %}filter={{ selected_filter }}&{% endif %}sort=default" {% if sort=='default' %}selected{% endif %}>Sort: Recommended</option>
+            <option value="/products?{% if selected_category %}category={{ selected_category }}&{% endif %}{% if selected_filter %}filter={{ selected_filter }}&{% endif %}sort=price_asc" {% if sort=='price_asc' %}selected{% endif %}>Price: Low to High</option>
+            <option value="/products?{% if selected_category %}category={{ selected_category }}&{% endif %}{% if selected_filter %}filter={{ selected_filter }}&{% endif %}sort=price_desc" {% if sort=='price_desc' %}selected{% endif %}>Price: High to Low</option>
+            <option value="/products?{% if selected_category %}category={{ selected_category }}&{% endif %}{% if selected_filter %}filter={{ selected_filter }}&{% endif %}sort=rating" {% if sort=='rating' %}selected{% endif %}>Top Rated</option>
+            <option value="/products?{% if selected_category %}category={{ selected_category }}&{% endif %}{% if selected_filter %}filter={{ selected_filter }}&{% endif %}sort=name" {% if sort=='name' %}selected{% endif %}>Name A-Z</option>
+        </select>
+    </div>
+
+    {% if products %}
+    <div class="products-grid">
+        {% for p in products %}
+        <div class="product-card">
+            <a href="/product/{{ p.id }}" style="text-decoration:none;">
+                <div class="product-img">
+                    <img src="{{ p.image_url }}" alt="{{ p.name }}"
+                         onerror="this.onerror=null;this.style.display='none';this.parentElement.style.background='{{ p.image_color }}22';">
+                    <button class="fav-btn {% if p.id in fav_ids %}active{% endif %}"
+                            onclick="event.preventDefault(); toggleFav({{ p.id }}, this)">
+                        {% if p.id in fav_ids %}❤️{% else %}🤍{% endif %}
+                    </button>
+                </div>
+                <div class="product-info">
+                    <div class="product-brand">{{ p.brand }}</div>
+                    <div class="product-name">{{ p.name }}</div>
+                    <div class="product-rating">
+                        <span class="stars">{{ '★' * (p.rating|int) }}{{ '☆' * (5 - p.rating|int) }}</span>
+                        <span class="rating-count">({{ p.review_count }})</span>
+                    </div>
+                    <div class="product-price">
+                        <span class="price">TT${{ "%.2f"|format(p.price) }}</span>
+                        {% if p.original_price %}
+                            <span class="original-price">TT${{ "%.2f"|format(p.original_price) }}</span>
+                        {% endif %}
+                    </div>
+            </a>
+                    <button class="add-to-cart-btn" onclick="addToCart({{ p.id }})">Add to Cart</button>
+                </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">🔍</div>
+        <h3>No products found</h3>
+        <p>Try adjusting your search or filters to find what you're looking for.</p>
+        <a href="/products" class="btn btn-primary">Browse All Products</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,350 @@
+{% extends 'base.html' %}
+{% block title %}Pennywise Cosmetics — Beauty Wise, Health Wise, Price Wise{% endblock %}
+
+{% block extra_head %}
+<style>
+/* Hero */
+.hero {
+    background: linear-gradient(135deg, #FFE8F5 0%, #FFC4E8 50%, #FFB3E6 100%);
+    padding: 80px 24px;
+    position: relative; overflow: hidden;
+}
+.hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23FF0090' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.hero-inner { max-width: 1280px; margin: 0 auto; position: relative; }
+.hero-content { max-width: 560px; }
+.hero-tagline {
+    font-size: 0.8rem; font-weight: 800; color: var(--hot-pink);
+    text-transform: uppercase; letter-spacing: 2px;
+    background: rgba(255,0,144,0.1);
+    border: 1px solid rgba(255,0,144,0.2);
+    padding: 4px 12px; border-radius: 100px;
+    display: inline-block; margin-bottom: 16px;
+}
+.hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.2rem; line-height: 1.15;
+    font-weight: 700; color: var(--text);
+    margin-bottom: 16px;
+}
+.hero-title em { color: var(--hot-pink); font-style: italic; }
+.hero-desc {
+    font-size: 1.05rem; color: var(--text-muted);
+    line-height: 1.7; margin-bottom: 32px;
+}
+.hero-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+.hero-float {
+    position: absolute; right: 0; top: 50%;
+    transform: translateY(-50%);
+    display: flex; gap: 12px;
+}
+.hero-product-preview {
+    background: white; border-radius: var(--radius);
+    padding: 16px; box-shadow: var(--shadow-lg);
+    display: flex; flex-direction: column; align-items: center;
+    gap: 8px; min-width: 100px;
+    animation: float 3s ease-in-out infinite;
+}
+.hero-product-preview:nth-child(2) { animation-delay: 0.5s; margin-top: 24px; }
+.hero-product-preview:nth-child(3) { animation-delay: 1s; }
+.hero-product-preview .emoji { font-size: 2.5rem; }
+.hero-product-preview .name { font-size: 0.7rem; font-weight: 700; text-align: center; }
+.hero-product-preview .price { font-size: 0.8rem; color: var(--hot-pink); font-weight: 800; }
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+/* Promo Strip */
+.promo-strip {
+    background: var(--hot-pink); color: white;
+    padding: 10px 0; overflow: hidden;
+}
+.promo-track {
+    display: flex; gap: 60px;
+    white-space: nowrap;
+    animation: marquee 20s linear infinite;
+}
+.promo-item { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.5px; }
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+/* Category Cards */
+.cat-grid {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px;
+    margin-top: 32px;
+}
+.cat-card {
+    background: white; border-radius: var(--radius);
+    border: 1.5px solid var(--border);
+    padding: 24px 16px; text-align: center;
+    text-decoration: none; color: var(--text);
+    transition: all 0.25s;
+}
+.cat-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); border-color: var(--hot-pink); }
+.cat-icon { font-size: 2.5rem; margin-bottom: 10px; }
+.cat-name { font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+.cat-count { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
+
+/* Product Sections */
+.products-section { padding: 60px 24px; }
+
+/* Why Us */
+.why-us {
+    background: var(--light-pink); padding: 60px 24px;
+    border-top: 1.5px solid var(--border);
+    border-bottom: 1.5px solid var(--border);
+}
+.why-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; margin-top: 40px; }
+.why-card { text-align: center; }
+.why-icon { font-size: 2.5rem; margin-bottom: 12px; }
+.why-title { font-size: 0.95rem; font-weight: 800; margin-bottom: 6px; }
+.why-desc { font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; }
+
+/* Pharmacy Banner */
+.pharmacy-banner {
+    background: linear-gradient(135deg, #1A0A12, #3D1429);
+    color: white; padding: 48px 24px;
+    border-radius: var(--radius); margin: 60px auto;
+    max-width: 1280px; display: flex; align-items: center;
+    justify-content: space-between; gap: 32px; flex-wrap: wrap;
+}
+.pharmacy-banner h2 { font-family: 'Playfair Display', serif; font-size: 1.8rem; }
+.pharmacy-banner p { color: rgba(255,255,255,0.7); margin-top: 8px; font-size: 0.9rem; }
+.pharmacy-numbers { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.pharmacy-badge {
+    background: rgba(255,0,144,0.2); border: 1px solid rgba(255,0,144,0.4);
+    border-radius: 100px; padding: 4px 10px;
+    font-size: 0.78rem; font-weight: 600; color: #FFB3E6;
+}
+
+@media (max-width: 900px) {
+    .hero-float { display: none; }
+    .hero-title { font-size: 2.2rem; }
+    .cat-grid { grid-template-columns: repeat(3, 1fr); }
+    .why-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+    .cat-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Promo Strip -->
+<div class="promo-strip">
+    <div class="promo-track">
+        <span class="promo-item"><i class="fa fa-truck"></i> FREE DELIVERY on orders over $150</span>
+        <span class="promo-item"><i class="fa fa-lipstick"></i> New Arrivals Every Week</span>
+        <span class="promo-item"><i class="fa fa-seedling"></i> Authentic Products Guaranteed</span>
+        <span class="promo-item"><i class="fa fa-prescription-bottle-alt"></i> Pharmacy Services Available</span>
+        <span class="promo-item"><i class="fa fa-gift"></i> Gift Wrapping Available</span>
+        <span class="promo-item"><i class="fa fa-truck"></i> FREE DELIVERY on orders over $150</span>
+        <span class="promo-item"><i class="fa fa-lipstick"></i> New Arrivals Every Week</span>
+        <span class="promo-item"><i class="fa fa-seedling"></i> Authentic Products Guaranteed</span>
+        <span class="promo-item"><i class="fa fa-prescription-bottle-alt"></i> Pharmacy Services Available</span>
+        <span class="promo-item"><i class="fa fa-gift"></i> Gift Wrapping Available</span>
+    </div>
+</div>
+
+<!-- Hero -->
+<div class="hero">
+    <div class="hero-inner">
+        <div class="hero-content">
+            <div class="hero-tagline">Trinidad & Tobago's #1 Beauty Destination</div>
+            <h1 class="hero-title">Look & Feel Your <em>Absolute Best</em></h1>
+            <p class="hero-desc">Shop cosmetics, skincare, hair care, perfumes, and more — at the lowest prices in the Caribbean. Because you deserve it.</p>
+            <div class="hero-btns">
+                <a href="/products" class="btn btn-primary btn-lg">Shop Now</a>
+                <a href="/products?filter=new" class="btn btn-outline btn-lg">New Arrivals</a>
+            </div>
+        </div>
+        <div class="hero-float">
+            <div class="hero-product-preview">
+                <div class="emoji"><i class="fa fa-lipstick"></i></div>
+                <div class="name">Matte Lipstick</div>
+                <div class="price">$18.99</div>
+            </div>
+            <div class="hero-product-preview">
+                <div class="emoji"><i class="fa fa-pump-soap"></i></div>
+                <div class="name">Day Moisturizer</div>
+                <div class="price">$29.99</div>
+            </div>
+            <div class="hero-product-preview">
+                <div class="emoji"><i class="fa fa-seedling"></i></div>
+                <div class="name">Floral EDP</div>
+                <div class="price">$79.99</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Shop by Category -->
+<div class="page-content">
+    <div class="products-section" style="padding: 60px 0 0;">
+        <div class="section-header">
+            <h2 class="section-title">Shop by Category</h2>
+            <p class="section-subtitle">Everything you need for beauty, health & more</p>
+        </div>
+        <div class="cat-grid">
+            <a href="/products?category=Cosmetics" class="cat-card">
+                <div class="cat-icon"><i class="fa fa-lipstick"></i></div>
+                <div class="cat-name">Cosmetics</div>
+                <div class="cat-count">Lips, Eyes, Face & more</div>
+            </a>
+            <a href="/products?category=Skincare" class="cat-card">
+                <div class="cat-icon"><i class="fa fa-pump-soap"></i></div>
+                <div class="cat-name">Skincare</div>
+                <div class="cat-count">Moisturisers, Serums & more</div>
+            </a>
+            <a href="/products?category=Hair" class="cat-card">
+                <div class="cat-icon"><i class="fa fa-scissors"></i></div>
+                <div class="cat-name">Hair Care</div>
+                <div class="cat-count">Shampoo, Treatments & more</div>
+            </a>
+            <a href="/products?category=Perfumes" class="cat-card">
+                <div class="cat-icon"><i class="fa fa-seedling"></i></div>
+                <div class="cat-name">Perfumes</div>
+                <div class="cat-count">EDP, EDT & Body Mists</div>
+            </a>
+            <a href="/products?category=Bath+%26+Body" class="cat-card">
+                <div class="cat-icon"><i class="fa fa-bath"></i></div>
+                <div class="cat-name">Bath & Body</div>
+                <div class="cat-count">Lotions, Scrubs & more</div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Bestsellers -->
+    <div class="products-section" style="padding: 60px 0 0;">
+        <div class="section-header" style="display:flex; align-items:flex-end; justify-content:space-between;">
+            <div>
+                <h2 class="section-title">Bestsellers</h2>
+                <p class="section-subtitle">Our most-loved products by Caribbean customers</p>
+            </div>
+            <a href="/products?filter=bestsellers" class="btn btn-outline btn-sm">View All</a>
+        </div>
+        <div class="product-grid">
+            {% for p in bestsellers %}
+            <div class="product-card">
+                <a href="/product/{{ p.id }}" style="text-decoration:none;">
+                    <div class="product-img">
+                        <img src="{{ p.image_url }}" alt="{{ p.name }}"
+                             onerror="this.onerror=null;this.style.display='none';this.parentElement.style.background='{{ p.image_color }}22';">
+                        <button class="fav-btn {% if p.id in fav_ids %}active{% endif %}"
+                                onclick="event.preventDefault(); toggleFav({{ p.id }}, this)">
+                            {% if p.id in fav_ids %}<i class="fa fa-heart"></i>{% else %}<i class="fa fa-heart-o"></i>{% endif %}
+                        </button>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-brand">{{ p.brand }}</div>
+                        <div class="product-name">{{ p.name }}</div>
+                        <div class="product-rating">
+                            <span class="stars">{{ '★' * (p.rating|int) }}{{ '☆' * (5 - p.rating|int) }}</span>
+                            <span class="rating-count">({{ p.review_count }})</span>
+                        </div>
+                        <div class="product-price">
+                            <span class="price">TT${{ "%.2f"|format(p.price) }}</span>
+                            {% if p.original_price %}<span class="original-price">TT${{ "%.2f"|format(p.original_price) }}</span>{% endif %}
+                        </div>
+                </a>
+                        <button class="add-to-cart-btn" onclick="addToCart({{ p.id }})">Add to Cart</button>
+                    </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- New Arrivals -->
+    <div class="products-section" style="padding: 60px 0 0;">
+        <div class="section-header" style="display:flex; align-items:flex-end; justify-content:space-between;">
+            <div>
+                <h2 class="section-title">New Arrivals</h2>
+                <p class="section-subtitle">Fresh finds for your beauty routine</p>
+            </div>
+            <a href="/products?filter=new" class="btn btn-outline btn-sm">View All</a>
+        </div>
+        <div class="product-grid">
+            {% for p in new_arrivals %}
+            <div class="product-card">
+                <a href="/product/{{ p.id }}" style="text-decoration:none;">
+                    <div class="product-img">
+                        <img src="{{ p.image_url }}" alt="{{ p.name }}"
+                             onerror="this.onerror=null;this.style.display='none';this.parentElement.style.background='{{ p.image_color }}22';">
+                        <button class="fav-btn {% if p.id in fav_ids %}active{% endif %}"
+                                onclick="event.preventDefault(); toggleFav({{ p.id }}, this)">
+                            {% if p.id in fav_ids %}<i class="fa fa-heart"></i>{% else %}<i class="fa fa-heart-o"></i>{% endif %}
+                        </button>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-brand">{{ p.brand }}</div>
+                        <div class="product-name">{{ p.name }}</div>
+                        <div class="product-rating">
+                            <span class="stars">{{ '★' * (p.rating|int) }}{{ '☆' * (5 - p.rating|int) }}</span>
+                            <span class="rating-count">({{ p.review_count }})</span>
+                        </div>
+                        <div class="product-price">
+                            <span class="price">TT${{ "%.2f"|format(p.price) }}</span>
+                            {% if p.original_price %}<span class="original-price">TT${{ "%.2f"|format(p.original_price) }}</span>{% endif %}
+                        </div>
+                </a>
+                        <button class="add-to-cart-btn" onclick="addToCart({{ p.id }})">Add to Cart</button>
+                    </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Why Choose Us -->
+<div class="why-us" style="margin-top: 60px;">
+    <div class="page-content">
+        <div class="section-header" style="text-align:center;">
+            <h2 class="section-title">Why Choose Pennywise?</h2>
+            <p class="section-subtitle">Trusted by thousands of Caribbean customers since 1995</p>
+        </div>
+        <div class="why-grid">
+            <div class="why-card">
+                <div class="why-icon"><i class="fa fa-money-bill-wave"></i></div>
+                <div class="why-title">Lowest Prices</div>
+                <div class="why-desc">We stock the widest range at the lowest prices throughout T&T. Why pay more?</div>
+            </div>
+            <div class="why-card">
+                <div class="why-icon"><i class="fa fa-check-circle"></i></div>
+                <div class="why-title">Authentic Products</div>
+                <div class="why-desc">All products are 100% genuine and sourced directly from authorized distributors.</div>
+            </div>
+            <div class="why-card">
+                <div class="why-icon"><i class="fa fa-shipping-fast"></i></div>
+                <div class="why-title">Fast Delivery</div>
+                <div class="why-desc">Nationwide delivery across Trinidad & Tobago. Same-day dispatch on orders before 12pm.</div>
+            </div>
+            <div class="why-card">
+                <div class="why-icon"><i class="fa fa-prescription-bottle-alt"></i></div>
+                <div class="why-title">Pharmacy Services</div>
+                <div class="why-desc">In-store pharmacy at all major locations. WhatsApp your prescription for easy collection.</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pharmacy Banner -->
+<div class="pharmacy-banner" style="margin: 60px auto; padding: 48px;">
+    <div>
+        <h2>Pennywise Pharmacy</h2>
+        <p>WhatsApp your prescription to your nearest branch and collect with ease.</p>
+        <div class="pharmacy-numbers">
+            <span class="pharmacy-badge">Chaguanas: 795-9473</span>
+            <span class="pharmacy-badge">La Romain: 684-9473</span>
+            <span class="pharmacy-badge">San Fernando: 473-9473</span>
+            <span class="pharmacy-badge">Port of Spain: 466-9473</span>
+            <span class="pharmacy-badge">Trincity: 735-9473</span>
+        </div>
+    </div>
+    <a href="/contact" class="btn btn-primary btn-lg">Contact Us</a>
+</div>
+
+{% endblock %}
