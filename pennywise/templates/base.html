@@ -455,11 +455,11 @@ function toggleFav(productId, btn) {
         if (data.added) {
             btn.classList.add('active');
             btn.textContent = '❤️';
-            showToast('Added to favourites', '❤️');
+            showToast('Added to favourites',);
         } else {
             btn.classList.remove('active');
             btn.textContent = '🤍';
-            showToast('Removed from favourites', '🤍');
+            showToast('Removed from favourites');
         }
     });
 }
