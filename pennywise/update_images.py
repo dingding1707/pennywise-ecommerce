@@ -1,14 +1,60 @@
+"""
+update_images.py
+────────────────
+Run this script to update product image URLs in the database.
+Usage: python update_images.py
+
+Steps:
+  1. Run the app once first so pennywise.db is created (python app.py).
+  2. Find replacement image URLs from unsplash.com or pexels.com.
+  3. Add/edit rows in the UPDATES list below.
+  4. Run: python update_images.py
+
+To find a product's current ID and image, run:
+  python update_images.py --list
+"""
+
 import sqlite3
 import os
+import argparse
 
 DB_PATH = os.path.join(os.path.dirname(__file__), 'pennywise.db')
 
-conn = sqlite3.connect(DB_PATH)
+
+def get_conn():
+    if not os.path.exists(DB_PATH):
+        print("ERROR: pennywise.db not found.")
+        print("Run 'python app.py' first to create and seed the database, then re-run this script.")
+        raise SystemExit(1)
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    return conn
 
 
-updates = [
-    
-    ('https://images.unsplash.com/photo-1616592079624-575de673daff?q=80&w=387&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', 1), 
+def list_products():
+    """Print all products with their current image URLs."""
+    conn = get_conn()
+    rows = conn.execute('SELECT id, name, brand, image_url FROM products ORDER BY id').fetchall()
+    conn.close()
+    print(f"\n{'ID':<4}  {'Brand':<20}  {'Name':<38}  {'Current Image URL'}")
+    print("-" * 110)
+    for r in rows:
+        url = (r['image_url'] or 'NO IMAGE')[:55]
+        print(f"{r['id']:<4}  {(r['brand'] or ''):<20}  {r['name']:<38}  {url}")
+    print()
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# EDIT THIS LIST to update images.
+# Format: (product_id, new_image_url)
+#
+# Tips for finding good URLs:
+#   • Go to unsplash.com, find the image, right-click → Copy image address
+#   • Append  ?w=400&h=400&fit=crop&q=80  for consistent square crops
+#   • Or use pexels.com → right-click the photo → Open in new tab → copy URL
+# ─────────────────────────────────────────────────────────────────────────────
+UPDATES = [
+   ('https://images.unsplash.com/photo-1616592079624-575de673daff?q=80&w=387&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', 1), 
     ('https://images.unsplash.com/photo-1773372238324-e9cffa5f45b7?q=80&w=396&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', 2),  
     ('https://images.unsplash.com/photo-1557205465-f3762edea6d3?q=80&w=387&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', 3),  
     ('https://images.unsplash.com/photo-1631214540553-ff044a3ff1d4?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', 4), 
@@ -44,13 +90,35 @@ updates = [
     ('https://images.unsplash.com/photo-1601065732058-029db52c86b4?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aGFuZCUyMGNyZWFtfGVufDB8fDB8fHww', 34),  # Shampoo
     ('https://images.unsplash.com/photo-1627495395570-d2c94e3319f5?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bGlxdWlkJTIwc29hcHxlbnwwfHwwfHx8MA%3D%3D', 35),  # Perfume
     ('https://images.unsplash.com/photo-1637524725461-bff1afdb946e?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8Ym9keSUyMG9pbHxlbnwwfHwwfHx8MA%3D%3D', 36),  # Eyeliner
-
 ]
 
-for url, pid in updates:
-    conn.execute('UPDATE products SET image_url=? WHERE id=?', (url, pid))
-    print(f'Updated product {pid}')
 
-conn.commit()
-conn.close()
-print('Done!')
+def apply_updates():
+    if not UPDATES:
+        print("No updates defined. Add (product_id, url) rows to the UPDATES list in this file.")
+        return
+
+    conn = get_conn()
+    updated = 0
+    for pid, url in UPDATES:
+        result = conn.execute('UPDATE products SET image_url=? WHERE id=?', (url, pid))
+        if result.rowcount:
+            name = conn.execute('SELECT name FROM products WHERE id=?', (pid,)).fetchone()
+            print(f"  Updated ID {pid}: {name['name'] if name else 'unknown'}")
+            updated += 1
+        else:
+            print(f"  WARNING: No product found with ID {pid}")
+    conn.commit()
+    conn.close()
+    print(f"\nDone — {updated} product(s) updated.")
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Update product image URLs in the Pennywise database.')
+    parser.add_argument('--list', action='store_true', help='List all products and their current image URLs')
+    args = parser.parse_args()
+
+    if args.list:
+        list_products()
+    else:
+        apply_updates()
