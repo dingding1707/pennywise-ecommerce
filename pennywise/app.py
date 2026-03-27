@@ -77,6 +77,7 @@ def init_db():
             subtotal REAL,
             delivery REAL,
             total REAL,
+            payment_method TEXT DEFAULT 'card_online',
             payment_last4 TEXT,
             status TEXT DEFAULT 'confirmed',
             created_at TEXT DEFAULT (datetime('now'))
@@ -94,6 +95,14 @@ def init_db():
     count = c.execute('SELECT COUNT(*) FROM products').fetchone()[0]
     if count == 0:
         seed_products(c)
+
+    # --- Ensure orders table has payment_method and payment_last4 columns ---
+    # This is a safe migration for existing databases
+    existing_cols = [row[1] for row in c.execute("PRAGMA table_info(orders)").fetchall()]
+    if 'payment_method' not in existing_cols:
+        c.execute("ALTER TABLE orders ADD COLUMN payment_method TEXT DEFAULT 'card_online'")
+    if 'payment_last4' not in existing_cols:
+        c.execute("ALTER TABLE orders ADD COLUMN payment_last4 TEXT")
 
     conn.commit()
     conn.close()
@@ -141,50 +150,50 @@ def seed_products(c):
 
     products = [
         # ── Cosmetics ──
-        ('Precision Eyeliner Pen', 'Long-lasting waterproof formula for precise lines. Smudge-resistant and fade-proof for all-day wear.', 24.99, 29.99, 'Cosmetics', 'Eyes', IMG['eyeliner'], None, '#2D1B4E', 150, 1, 0, 0, 0, 4.8, 324, '0.01 oz', 'L\'Oréal'),
-        ('Matte Velvet Lipstick', 'Ultra-pigmented matte lipstick. Stays put for 12 hours without drying out your lips.', 18.99, None, 'Cosmetics', 'Lips', IMG['lipstick'], None, '#C0392B', 200, 1, 0, 0, 0, 4.7, 218, '0.12 oz', 'Maybelline'),
-        ('Full Coverage Foundation', 'Buildable coverage foundation with SPF 20. Suitable for all skin types. Lasts 24 hours.', 34.99, 42.00, 'Cosmetics', 'Face', IMG['foundation'], None, '#E8C99A', 120, 1, 0, 0, 0, 4.5, 412, '30ml', 'L\'Oréal'),
-        ('Volume Mascara', 'Dramatic volume and length mascara. Clump-free formula, buildable for intense lashes.', 19.99, None, 'Cosmetics', 'Eyes', IMG['mascara'], None, '#1A1A2E', 180, 0, 1, 0, 0, 4.6, 289, '10ml', 'Maybelline'),
-        ('18-Shade Eyeshadow Palette', 'Highly pigmented palette with matte, shimmer, and glitter shades perfect for any look.', 39.99, 55.00, 'Cosmetics', 'Eyes', IMG['eyeshadow'], None, '#8E44AD', 80, 0, 0, 1, 0, 4.9, 156, 'Full Size', 'NYX'),
-        ('Mini Lip Gloss Set', 'Set of 6 high-shine lip glosses in trending shades. Perfect for on-the-go touch-ups.', 22.99, None, 'Cosmetics', 'Lips', IMG['lip_gloss'], None, '#FF69B4', 95, 0, 0, 0, 1, 4.4, 87, 'Mini Set', 'NYX'),
-        ('Concealer Stick', 'Full-coverage concealer that hides dark circles and blemishes. Blendable, long-lasting formula.', 16.99, 20.00, 'Cosmetics', 'Face', IMG['concealer'], None, '#DEB887', 110, 0, 1, 0, 0, 4.3, 198, '8ml', 'Revlon'),
-        ('Setting Powder', 'Translucent finishing powder for a flawless matte look. Reduces shine all day.', 14.99, None, 'Cosmetics', 'Face', IMG['powder'], None, '#FAD7A0', 90, 0, 0, 0, 0, 4.2, 145, '10g', 'e.l.f.'),
-        ('Blush & Bronzer Duo', 'Two-in-one compact with a natural blush and warm bronzer. Buildable color, silky texture.', 27.99, 35.00, 'Cosmetics', 'Face', IMG['blush'], None, '#E07B54', 75, 1, 0, 1, 0, 4.7, 201, '8g', 'Milani'),
-        ('Nude Lip Liner', 'Define and shape your lips with this long-lasting nude liner. Works with any lip color.', 11.99, None, 'Cosmetics', 'Lips', IMG['lip_liner'], None, '#D4A574', 130, 0, 0, 0, 0, 4.1, 112, '1.5g', 'Revlon'),
+        ('Precision Eyeliner Pen', 'Long-lasting waterproof formula for precise lines. Smudge-resistant and fade-proof for all-day wear.', 24.99, 29.99, 'Cosmetics', 'Eyes', IMG['eyeliner'], None, '#2D1B4E', 150, 1, 0, 0, 0, 0.0, 0, '0.01 oz', 'L\'Oréal'),
+        ('Matte Velvet Lipstick', 'Ultra-pigmented matte lipstick. Stays put for 12 hours without drying out your lips.', 18.99, None, 'Cosmetics', 'Lips', IMG['lipstick'], None, '#C0392B', 200, 1, 0, 0, 0, 0.0, 0, '0.12 oz', 'Maybelline'),
+        ('Full Coverage Foundation', 'Buildable coverage foundation with SPF 20. Suitable for all skin types. Lasts 24 hours.', 34.99, 42.00, 'Cosmetics', 'Face', IMG['foundation'], None, '#E8C99A', 120, 1, 0, 0, 0, 0.0, 0, '30ml', 'L\'Oréal'),
+        ('Volume Mascara', 'Dramatic volume and length mascara. Clump-free formula, buildable for intense lashes.', 19.99, None, 'Cosmetics', 'Eyes', IMG['mascara'], None, '#1A1A2E', 180, 0, 1, 0, 0, 0.0, 0, '10ml', 'Maybelline'),
+        ('18-Shade Eyeshadow Palette', 'Highly pigmented palette with matte, shimmer, and glitter shades perfect for any look.', 39.99, 55.00, 'Cosmetics', 'Eyes', IMG['eyeshadow'], None, '#8E44AD', 80, 0, 0, 1, 0, 0.0, 0, 'Full Size', 'NYX'),
+        ('Mini Lip Gloss Set', 'Set of 6 high-shine lip glosses in trending shades. Perfect for on-the-go touch-ups.', 22.99, None, 'Cosmetics', 'Lips', IMG['lip_gloss'], None, '#FF69B4', 95, 0, 0, 0, 1, 0.0, 0, 'Mini Set', 'NYX'),
+        ('Concealer Stick', 'Full-coverage concealer that hides dark circles and blemishes. Blendable, long-lasting formula.', 16.99, 20.00, 'Cosmetics', 'Face', IMG['concealer'], None, '#DEB887', 110, 0, 1, 0, 0, 0.0, 0, '8ml', 'Revlon'),
+        ('Setting Powder', 'Translucent finishing powder for a flawless matte look. Reduces shine all day.', 14.99, None, 'Cosmetics', 'Face', IMG['powder'], None, '#FAD7A0', 90, 0, 0, 0, 0, 0.0, 0, '10g', 'e.l.f.'),
+        ('Blush & Bronzer Duo', 'Two-in-one compact with a natural blush and warm bronzer. Buildable color, silky texture.', 27.99, 35.00, 'Cosmetics', 'Face', IMG['blush'], None, '#E07B54', 75, 1, 0, 1, 0, 0.0, 0, '8g', 'Milani'),
+        ('Nude Lip Liner', 'Define and shape your lips with this long-lasting nude liner. Works with any lip color.', 11.99, None, 'Cosmetics', 'Lips', IMG['lip_liner'], None, '#D4A574', 130, 0, 0, 0, 0, 0.0, 0, '1.5g', 'Revlon'),
 
         # ── Skincare ──
-        ('Hydrating Day Moisturizer', 'Lightweight SPF 30 moisturizer with hyaluronic acid. Plumps and protects all day.', 29.99, 38.00, 'Skincare', 'Moisturizers', IMG['moisturizer'], None, '#AED6F1', 160, 1, 0, 0, 0, 4.8, 387, '50ml', 'Neutrogena'),
-        ('Gentle Foaming Cleanser', 'Sulfate-free cleanser that removes makeup and impurities without stripping moisture.', 17.99, None, 'Skincare', 'Cleansers', IMG['cleanser'], None, '#D5F5E3', 140, 1, 0, 0, 0, 4.6, 256, '150ml', 'CeraVe'),
-        ('Vitamin C Brightening Serum', '20% Vitamin C serum that brightens skin, fades dark spots, and boosts radiance overnight.', 44.99, 60.00, 'Skincare', 'Serums', IMG['serum'], None, '#F9E79F', 70, 0, 1, 0, 0, 4.9, 523, '30ml', 'TruSkin'),
-        ('Balancing Toner', 'Alcohol-free toner with niacinamide to minimize pores, balance oil, and prep skin for serums.', 15.99, None, 'Skincare', 'Toners', IMG['toner'], None, '#A9DFBF', 120, 0, 0, 0, 0, 4.4, 178, '200ml', 'Thayers'),
-        ('Retinol Night Cream', 'Powerful retinol cream that reduces fine lines and wrinkles overnight. Gentle enough for sensitive skin.', 36.99, 48.00, 'Skincare', 'Moisturizers', IMG['night_cream'], None, '#D7BDE2', 85, 1, 0, 0, 0, 4.7, 304, '50ml', 'RoC'),
-        ('SPF 50 Sunscreen Lotion', 'Broad-spectrum UVA/UVB protection. Lightweight, non-greasy formula. Water resistant 80 minutes.', 22.99, None, 'Skincare', 'Sunscreen', IMG['sunscreen'], None, '#FDEBD0', 200, 0, 0, 0, 0, 4.5, 241, '90ml', 'Banana Boat'),
-        ('Exfoliating Face Scrub', 'Micro-bead-free scrub with AHA/BHA to remove dead skin cells and unclog pores.', 19.99, 25.00, 'Skincare', 'Cleansers', IMG['face_scrub'], None, '#FAD7A0', 95, 0, 1, 0, 0, 4.3, 167, '75ml', "St. Ives"),
-        ('Hyaluronic Acid Mist', 'Hydrating facial mist with hyaluronic acid and rosewater for instant moisture throughout the day.', 18.99, None, 'Skincare', 'Mists & Essence', IMG['facial_mist'], None, '#FADBD8', 110, 0, 0, 0, 0, 4.6, 198, '100ml', 'Mario Badescu'),
+        ('Hydrating Day Moisturizer', 'Lightweight SPF 30 moisturizer with hyaluronic acid. Plumps and protects all day.', 29.99, 38.00, 'Skincare', 'Moisturizers', IMG['moisturizer'], None, '#AED6F1', 160, 1, 0, 0, 0, 0.0, 0, '50ml', 'Neutrogena'),
+        ('Gentle Foaming Cleanser', 'Sulfate-free cleanser that removes makeup and impurities without stripping moisture.', 17.99, None, 'Skincare', 'Cleansers', IMG['cleanser'], None, '#D5F5E3', 140, 1, 0, 0, 0, 0.0, 0, '150ml', 'CeraVe'),
+        ('Vitamin C Brightening Serum', '20% Vitamin C serum that brightens skin, fades dark spots, and boosts radiance overnight.', 44.99, 60.00, 'Skincare', 'Serums', IMG['serum'], None, '#F9E79F', 70, 0, 1, 0, 0, 0.0, 0, '30ml', 'TruSkin'),
+        ('Balancing Toner', 'Alcohol-free toner with niacinamide to minimize pores, balance oil, and prep skin for serums.', 15.99, None, 'Skincare', 'Toners', IMG['toner'], None, '#A9DFBF', 120, 0, 0, 0, 0, 0.0, 0, '200ml', 'Thayers'),
+        ('Retinol Night Cream', 'Powerful retinol cream that reduces fine lines and wrinkles overnight. Gentle enough for sensitive skin.', 36.99, 48.00, 'Skincare', 'Moisturizers', IMG['night_cream'], None, '#D7BDE2', 85, 1, 0, 0, 0, 0.0, 0, '50ml', 'RoC'),
+        ('SPF 50 Sunscreen Lotion', 'Broad-spectrum UVA/UVB protection. Lightweight, non-greasy formula. Water resistant 80 minutes.', 22.99, None, 'Skincare', 'Sunscreen', IMG['sunscreen'], None, '#FDEBD0', 200, 0, 0, 0, 0, 0.0, 0, '90ml', 'Banana Boat'),
+        ('Exfoliating Face Scrub', 'Micro-bead-free scrub with AHA/BHA to remove dead skin cells and unclog pores.', 19.99, 25.00, 'Skincare', 'Cleansers', IMG['face_scrub'], None, '#FAD7A0', 95, 0, 1, 0, 0, 0.0, 0, '75ml', "St. Ives"),
+        ('Hyaluronic Acid Mist', 'Hydrating facial mist with hyaluronic acid and rosewater for instant moisture throughout the day.', 18.99, None, 'Skincare', 'Mists & Essence', IMG['facial_mist'], None, '#FADBD8', 110, 0, 0, 0, 0, 0.0, 0, '100ml', 'Mario Badescu'),
 
         # ── Hair ──
-        ('Argan Oil Shampoo', 'Sulfate-free shampoo infused with argan oil. Cleanses, nourishes, and adds shine to all hair types.', 16.99, None, 'Hair', 'Shampoo', IMG['shampoo'], None, '#85C1E9', 170, 1, 0, 0, 0, 4.5, 289, '400ml', 'OGX'),
-        ('Deep Repair Conditioner', 'Intense moisture conditioner with shea butter and keratin. Detangles and softens damaged hair.', 17.99, 22.00, 'Hair', 'Conditioner', IMG['conditioner'], None, '#73C6B6', 150, 1, 0, 0, 0, 4.7, 312, '400ml', 'OGX'),
-        ('Coconut Hair Mask', 'Weekly deep conditioning mask with coconut oil. Restores elasticity and reduces breakage.', 24.99, 30.00, 'Hair', 'Treatment', IMG['hair_mask'], None, '#F9E79F', 90, 0, 0, 1, 0, 4.8, 187, '300ml', 'SheaMoisture'),
-        ('Heat Protection Spray', 'Lightweight spray that protects hair from heat damage up to 450°F. Adds shine and reduces frizz.', 19.99, None, 'Hair', 'Styling', IMG['heat_spray'], None, '#F1948A', 115, 0, 1, 0, 0, 4.4, 154, '250ml', 'TRESemmé'),
-        ('Castor Oil Hair Growth Serum', 'Stimulates hair growth and strengthens roots. Reduces thinning and promotes thicker hair.', 28.99, 36.00, 'Hair', 'Treatment', IMG['hair_oil'], None, '#82E0AA', 80, 1, 0, 0, 0, 4.6, 421, '60ml', 'Mielle'),
-        ('Mini Haircare Starter Kit', 'Travel-sized shampoo, conditioner, and leave-in cream. Perfect for on-the-go hair care.', 21.99, None, 'Hair', 'Styling', IMG['hair_kit'], None, '#D7BDE2', 70, 0, 0, 0, 1, 4.3, 96, 'Mini Kit', 'OGX'),
+        ('Argan Oil Shampoo', 'Sulfate-free shampoo infused with argan oil. Cleanses, nourishes, and adds shine to all hair types.', 16.99, None, 'Hair', 'Shampoo', IMG['shampoo'], None, '#85C1E9', 170, 1, 0, 0, 0, 0.0, 0, '400ml', 'OGX'),
+        ('Deep Repair Conditioner', 'Intense moisture conditioner with shea butter and keratin. Detangles and softens damaged hair.', 17.99, 22.00, 'Hair', 'Conditioner', IMG['conditioner'], None, '#73C6B6', 150, 1, 0, 0, 0, 0.0, 0, '400ml', 'OGX'),
+        ('Coconut Hair Mask', 'Weekly deep conditioning mask with coconut oil. Restores elasticity and reduces breakage.', 24.99, 30.00, 'Hair', 'Treatment', IMG['hair_mask'], None, '#F9E79F', 90, 0, 0, 1, 0, 0.0, 0, '300ml', 'SheaMoisture'),
+        ('Heat Protection Spray', 'Lightweight spray that protects hair from heat damage up to 450°F. Adds shine and reduces frizz.', 19.99, None, 'Hair', 'Styling', IMG['heat_spray'], None, '#F1948A', 115, 0, 1, 0, 0, 0.0, 0, '250ml', 'TRESemmé'),
+        ('Castor Oil Hair Growth Serum', 'Stimulates hair growth and strengthens roots. Reduces thinning and promotes thicker hair.', 28.99, 36.00, 'Hair', 'Treatment', IMG['hair_oil'], None, '#82E0AA', 80, 1, 0, 0, 0, 0.0, 0, '60ml', 'Mielle'),
+        ('Mini Haircare Starter Kit', 'Travel-sized shampoo, conditioner, and leave-in cream. Perfect for on-the-go hair care.', 21.99, None, 'Hair', 'Styling', IMG['hair_kit'], None, '#D7BDE2', 70, 0, 0, 0, 1, 0.0, 0, 'Mini Kit', 'OGX'),
 
         # ── Perfumes ──
-        ('Floral Bloom EDP 100ml', 'A feminine fragrance with notes of rose, jasmine, and white musk. Long-lasting, elegant, and refined.', 79.99, 95.00, 'Perfumes', 'Eau de Parfum', IMG['perfume_floral'], None, '#FF85A2', 60, 1, 0, 0, 0, 4.9, 234, '100ml', 'Pennywise Select'),
-        ('Fresh Citrus EDT 50ml', 'A vibrant unisex fragrance with bursts of bergamot, lemon, and green tea. Light and refreshing.', 49.99, None, 'Perfumes', 'Eau de Toilette', IMG['perfume_citrus'], None, '#F9E79F', 85, 0, 1, 0, 0, 4.6, 178, '50ml', 'Pennywise Select'),
-        ('Oud & Amber Intense', 'A rich, oriental fragrance with oud, amber, and sandalwood. Sophisticated and long-lasting.', 89.99, 110.00, 'Perfumes', 'Eau de Parfum', IMG['perfume_oud'], None, '#8B4513', 45, 1, 0, 0, 0, 4.8, 145, '75ml', 'Pennywise Select'),
-        ('Caribbean Breeze Body Mist', 'A light, refreshing body mist with coconut, vanilla, and sea salt. Tropical and carefree.', 19.99, None, 'Perfumes', 'Body Mist', IMG['body_mist'], None, '#85C1E9', 120, 0, 0, 0, 0, 4.4, 201, '250ml', 'Pennywise Select'),
-        ('Mini Perfume Discovery Set', 'Five mini perfumes in our bestselling scents. Perfect for travel or discovering your signature scent.', 44.99, 60.00, 'Perfumes', 'Gift Sets', IMG['perfume_set'], None, '#D7BDE2', 55, 0, 0, 1, 1, 4.7, 312, 'Mini Set 5x10ml', 'Pennywise Select'),
+        ('Floral Bloom EDP 100ml', 'A feminine fragrance with notes of rose, jasmine, and white musk. Long-lasting, elegant, and refined.', 79.99, 95.00, 'Perfumes', 'Eau de Parfum', IMG['perfume_floral'], None, '#FF85A2', 60, 1, 0, 0, 0, 0.0, 0, '100ml', 'Pennywise Select'),
+        ('Fresh Citrus EDT 50ml', 'A vibrant unisex fragrance with bursts of bergamot, lemon, and green tea. Light and refreshing.', 49.99, None, 'Perfumes', 'Eau de Toilette', IMG['perfume_citrus'], None, '#F9E79F', 85, 0, 1, 0, 0, 0.0, 0, '50ml', 'Pennywise Select'),
+        ('Oud & Amber Intense', 'A rich, oriental fragrance with oud, amber, and sandalwood. Sophisticated and long-lasting.', 89.99, 110.00, 'Perfumes', 'Eau de Parfum', IMG['perfume_oud'], None, '#8B4513', 45, 1, 0, 0, 0, 0.0, 0, '75ml', 'Pennywise Select'),
+        ('Caribbean Breeze Body Mist', 'A light, refreshing body mist with coconut, vanilla, and sea salt. Tropical and carefree.', 19.99, None, 'Perfumes', 'Body Mist', IMG['body_mist'], None, '#85C1E9', 120, 0, 0, 0, 0, 0.0, 0, '250ml', 'Pennywise Select'),
+        ('Mini Perfume Discovery Set', 'Five mini perfumes in our bestselling scents. Perfect for travel or discovering your signature scent.', 44.99, 60.00, 'Perfumes', 'Gift Sets', IMG['perfume_set'], None, '#D7BDE2', 55, 0, 0, 1, 1, 0.0, 0, 'Mini Set 5x10ml', 'Pennywise Select'),
 
         # ── Bath & Body ──
-        ('Shea Butter Body Lotion', 'Rich, deeply moisturizing lotion with shea butter and vitamin E. Absorbs quickly for soft, glowing skin.', 15.99, None, 'Bath & Body', 'Body Lotion', IMG['body_lotion'], None, '#FDEBD0', 190, 1, 0, 0, 0, 4.7, 356, '400ml', 'Vaseline'),
-        ('Lavender Body Wash', 'Calming lavender body wash that cleanses and soothes skin. Gentle enough for daily use.', 12.99, 16.00, 'Bath & Body', 'Body Wash', IMG['body_wash'], None, '#D7BDE2', 210, 1, 0, 0, 0, 4.5, 298, '500ml', "Aveeno"),
-        ('Coffee Sugar Body Scrub', 'Exfoliating scrub with coffee grounds and raw sugar. Removes dead skin, smooths, and energizes.', 22.99, 28.00, 'Bath & Body', 'Body Scrub', IMG['body_scrub'], None, '#8B4513', 100, 0, 1, 0, 0, 4.8, 214, '250g', 'Frank Body'),
-        ('Luxe Bath Bomb Set', 'Set of 6 fizzing bath bombs in various scents and colors. Turn your bath into a spa experience.', 28.99, None, 'Bath & Body', 'Bath Treats', IMG['bath_bomb'], None, '#F1948A', 75, 0, 0, 1, 0, 4.9, 187, 'Set of 6', 'Da Bomb'),
-        ('Hand Cream Trio', 'Three rich hand creams in rose, vanilla, and coconut scents. Moisturizes and repairs dry hands.', 19.99, 25.00, 'Bath & Body', 'Hand Care', IMG['hand_cream'], None, '#FAD7A0', 88, 0, 0, 1, 0, 4.6, 142, 'Trio 3x75ml', "L'Occitane"),
-        ('Antibacterial Liquid Soap', 'Moisturizing antibacterial hand soap with aloe vera. Kills 99.9% of germs while keeping hands soft.', 8.99, None, 'Bath & Body', 'Hand Care', IMG['liquid_soap'], None, '#AED6F1', 250, 0, 0, 0, 0, 4.3, 178, '250ml', 'Dettol'),
-        ('Coconut & Lime Body Oil', 'Lightweight, non-greasy body oil with coconut and lime. Adds luminous glow and deep moisture.', 24.99, 32.00, 'Bath & Body', 'Body Oil', IMG['body_oil'], None, '#A9DFBF', 95, 0, 1, 0, 0, 4.7, 165, '150ml', 'Kopari'),
+        ('Shea Butter Body Lotion', 'Rich, deeply moisturizing lotion with shea butter and vitamin E. Absorbs quickly for soft, glowing skin.', 15.99, None, 'Bath & Body', 'Body Lotion', IMG['body_lotion'], None, '#FDEBD0', 190, 1, 0, 0, 0, 0.0, 0, '400ml', 'Vaseline'),
+        ('Lavender Body Wash', 'Calming lavender body wash that cleanses and soothes skin. Gentle enough for daily use.', 12.99, 16.00, 'Bath & Body', 'Body Wash', IMG['body_wash'], None, '#D7BDE2', 210, 1, 0, 0, 0, 0.0, 0, '500ml', "Aveeno"),
+        ('Coffee Sugar Body Scrub', 'Exfoliating scrub with coffee grounds and raw sugar. Removes dead skin, smooths, and energizes.', 22.99, 28.00, 'Bath & Body', 'Body Scrub', IMG['body_scrub'], None, '#8B4513', 100, 0, 1, 0, 0, 0.0, 0, '250g', 'Frank Body'),
+        ('Luxe Bath Bomb Set', 'Set of 6 fizzing bath bombs in various scents and colors. Turn your bath into a spa experience.', 28.99, None, 'Bath & Body', 'Bath Treats', IMG['bath_bomb'], None, '#F1948A', 75, 0, 0, 1, 0, 0.0, 0, 'Set of 6', 'Da Bomb'),
+        ('Hand Cream Trio', 'Three rich hand creams in rose, vanilla, and coconut scents. Moisturizes and repairs dry hands.', 19.99, 25.00, 'Bath & Body', 'Hand Care', IMG['hand_cream'], None, '#FAD7A0', 88, 0, 0, 1, 0, 0.0, 0, 'Trio 3x75ml', "L'Occitane"),
+        ('Antibacterial Liquid Soap', 'Moisturizing antibacterial hand soap with aloe vera. Kills 99.9% of germs while keeping hands soft.', 8.99, None, 'Bath & Body', 'Hand Care', IMG['liquid_soap'], None, '#AED6F1', 250, 0, 0, 0, 0, 0.0, 0, '250ml', 'Dettol'),
+        ('Coconut & Lime Body Oil', 'Lightweight, non-greasy body oil with coconut and lime. Adds luminous glow and deep moisture.', 24.99, 32.00, 'Bath & Body', 'Body Oil', IMG['body_oil'], None, '#A9DFBF', 95, 0, 1, 0, 0, 0.0, 0, '150ml', 'Kopari'),
     ]
 
     c.executemany('''
@@ -194,21 +203,7 @@ def seed_products(c):
         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
     ''', products)
 
-    # Seed some reviews
-    reviews = [
-        (1, None, 'Alicia M.', 5, 'Best eyeliner I\'ve ever used! Stays on all day even in the humidity.'),
-        (1, None, 'Priya S.', 5, 'Arrived quickly and exactly as described. Will definitely buy again!'),
-        (2, None, 'Keisha R.', 4, 'Beautiful color, stays on for hours. Slightly drying but great for the price.'),
-        (11, None, 'Sandra T.', 5, 'My skin has never felt so soft. I use this every morning and love it.'),
-        (13, None, 'Maria G.', 5, 'Noticed a difference in my dark spots within two weeks. Worth every penny!'),
-        (25, None, 'Renee P.', 5, 'This perfume gets me so many compliments. Smells absolutely divine.'),
-        (29, None, 'Tricia F.', 4, 'Great gift set! All five scents are lovely. Perfect for travel.'),
-        (30, None, 'Diane W.', 5, 'My skin is so soft and moisturized. Best body lotion I\'ve tried.'),
-    ]
-    c.executemany('''
-        INSERT INTO reviews (product_id, user_id, user_name, rating, comment)
-        VALUES (?,?,?,?,?)
-    ''', reviews)
+    # No seeded reviews — all reviews come from real users
 
 
 # ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -418,8 +413,9 @@ def checkout_payment():
     if 'checkout_info' not in session:
         return redirect(url_for('checkout'))
     if request.method == 'POST':
+        payment_method = request.form.get('payment_method', 'card_online')
         card_number = request.form.get('card_number', '').replace(' ', '')
-        last4 = card_number[-4:] if len(card_number) >= 4 else '****'
+        last4 = card_number[-4:] if len(card_number) >= 4 else None
         info = session['checkout_info']
         cart = get_cart()
         subtotal = cart_subtotal()
@@ -429,12 +425,12 @@ def checkout_payment():
         conn = get_db()
         conn.execute('''
             INSERT INTO orders (user_id, email, first_name, last_name, address, city, phone,
-                                items, subtotal, delivery, total, payment_last4)
-            VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+                                items, subtotal, delivery, total, payment_method, payment_last4)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
         ''', (
             session.get('user_id'), info['email'], info['first_name'], info['last_name'],
             info['address'], info['city'], info['phone'],
-            items_json, subtotal, delivery, total, last4
+            items_json, subtotal, delivery, total, payment_method, last4
         ))
         order_id = conn.execute('SELECT last_insert_rowid()').fetchone()[0]
         conn.commit()
@@ -445,7 +441,8 @@ def checkout_payment():
             'id': order_id,
             'total': total,
             'first_name': info['first_name'],
-            'last4': last4
+            'last4': last4,
+            'payment_method': payment_method
         }
         return redirect(url_for('order_confirmation'))
     subtotal = cart_subtotal()
