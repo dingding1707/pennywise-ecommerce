@@ -1,200 +1,171 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% block title %}Payment | Pennywise Cosmetics{% endblock %}
-
 {% block extra_head %}
 <style>
 .checkout-page { padding: 40px 0 80px; }
 .checkout-layout { display: grid; grid-template-columns: 1fr 380px; gap: 48px; align-items: start; }
-.checkout-heading { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; margin-bottom: 8px; }
+.checkout-heading { font-family: "Playfair Display", serif; font-size: 1.8rem; font-weight: 700; margin-bottom: 8px; }
 .checkout-steps { display: flex; align-items: center; gap: 8px; margin-bottom: 36px; }
 .step { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 700; }
 .step-num { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 800; }
 .step.done .step-num { background: var(--success); color: white; }
-.step.active .step-num { background: var(--hot-pink); color: white; }
+.step.active .step-num { background: var(--primary); color: white; }
 .step.pending .step-num { background: var(--border); color: var(--text-muted); }
-.step.active .step-label { color: var(--hot-pink); }
+.step.active .step-label { color: var(--primary); }
 .step.done .step-label { color: var(--success); }
 .step.pending .step-label { color: var(--text-muted); }
 .step-divider { flex: 1; height: 1.5px; background: var(--border); max-width: 60px; }
-
-.payment-form {
-    background: white; border-radius: var(--radius);
-    border: 1.5px solid var(--border); padding: 32px;
-}
+.payment-form { background: white; border-radius: var(--radius); border: 1.5px solid var(--border); padding: 32px; }
 .form-section { margin-bottom: 28px; }
-.form-section-title { font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1.5px solid var(--border); }
+.form-section-title { font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1.5px solid var(--border); display: flex; align-items: center; gap: 8px; }
+.form-section-title i { color: var(--primary); }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .form-group { margin-bottom: 16px; }
 .form-label { font-size: 0.82rem; font-weight: 700; color: var(--text); display: block; margin-bottom: 6px; }
-.form-input { width: 100%; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-family: 'Nunito', sans-serif; font-size: 0.9rem; outline: none; color: var(--text); transition: border-color 0.2s; }
-.form-input:focus { border-color: var(--hot-pink); }
-.card-icons { display: flex; gap: 8px; margin-bottom: 16px; }
-.card-icon { background: var(--pale-pink); border: 1.5px solid var(--border); border-radius: 6px; padding: 4px 10px; font-size: 0.78rem; font-weight: 800; color: var(--text-muted); }
-.security-note { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-muted); background: var(--pale-pink); border-radius: var(--radius-sm); padding: 12px 14px; margin-bottom: 24px; }
-
-.delivery-info {
-    background: var(--pale-pink); border-radius: var(--radius);
-    border: 1.5px solid var(--border); padding: 20px; margin-bottom: 20px;
-}
-.delivery-info h4 { font-size: 0.85rem; font-weight: 800; margin-bottom: 12px; }
+.form-input { width: 100%; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-family: "Nunito", sans-serif; font-size: 0.9rem; outline: none; color: var(--text); transition: border-color 0.2s; }
+.form-input:focus { border-color: var(--primary); }
+.payment-options { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+.payment-option { display: flex; align-items: center; gap: 14px; padding: 16px 18px; border: 2px solid var(--border); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; }
+.payment-option:hover { border-color: var(--primary); background: var(--primary-pale); }
+.payment-option.selected { border-color: var(--primary); background: var(--primary-pale); }
+.payment-option input[type=radio] { accent-color: var(--primary); width: 18px; height: 18px; flex-shrink: 0; }
+.payment-option-icon { font-size: 1.3rem; color: var(--primary); width: 28px; text-align: center; }
+.payment-option-info .title { font-size: 0.9rem; font-weight: 800; color: var(--text); }
+.payment-option-info .desc { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
+.delivery-info { background: var(--primary-pale); border-radius: var(--radius); border: 1.5px solid var(--border); padding: 20px; margin-bottom: 20px; }
+.delivery-info h4 { font-size: 0.85rem; font-weight: 800; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+.delivery-info h4 i { color: var(--primary); }
 .delivery-row { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px; }
 .delivery-row span { font-weight: 700; color: var(--text); }
-
+.security-note { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-muted); background: var(--primary-pale); border-radius: var(--radius-sm); padding: 12px 14px; margin-bottom: 24px; }
+.security-note i { color: var(--primary); }
+.cod-info { background: #FFF9E6; border: 1.5px solid #F5D76E; border-radius: var(--radius); padding: 16px 18px; display: none; font-size: 0.85rem; color: #7A6020; margin-bottom: 16px; }
+.cod-info i { color: #E8A020; margin-right: 6px; }
 .checkout-summary { background: white; border-radius: var(--radius); border: 1.5px solid var(--border); padding: 28px; position: sticky; top: 100px; }
 .summary-item { display: flex; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
 .summary-item:last-child { border-bottom: none; }
-.si-img { width: 44px; height: 44px; flex-shrink: 0; border-radius: var(--radius-sm); border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; background: var(--pale-pink); }
+.si-img { width: 44px; height: 44px; flex-shrink: 0; border-radius: var(--radius-sm); border: 1.5px solid var(--border); overflow: hidden; background: var(--primary-pale); }
+.si-img img { width: 100%; height: 100%; object-fit: cover; }
 .si-name { font-size: 0.8rem; font-weight: 700; flex: 1; }
 .si-qty { font-size: 0.75rem; color: var(--text-muted); }
-.si-price { font-size: 0.85rem; font-weight: 800; color: var(--hot-pink); }
-
-@media (max-width: 900px) {
-    .checkout-layout { grid-template-columns: 1fr; }
-    .checkout-summary { position: static; order: -1; }
-    .form-row { grid-template-columns: 1fr; }
-}
+.si-price { font-size: 0.85rem; font-weight: 800; color: var(--primary); }
+@media (max-width: 900px) { .checkout-layout { grid-template-columns: 1fr; } .checkout-summary { position: static; order: -1; } .form-row { grid-template-columns: 1fr; } }
 </style>
 {% endblock %}
-
 {% block content %}
 <div class="page-content checkout-page">
     <div class="checkout-heading">Checkout</div>
     <div class="checkout-steps">
-        <div class="step done">
-            <div class="step-num">✓</div>
-            <span class="step-label">Delivery</span>
-        </div>
+        <div class="step done"><div class="step-num"><i class="fa-solid fa-check" style="font-size:0.65rem;"></i></div><span class="step-label">Delivery</span></div>
         <div class="step-divider" style="background:var(--success);"></div>
-        <div class="step active">
-            <div class="step-num">2</div>
-            <span class="step-label">Payment</span>
-        </div>
+        <div class="step active"><div class="step-num">2</div><span class="step-label">Payment</span></div>
         <div class="step-divider"></div>
-        <div class="step pending">
-            <div class="step-num">3</div>
-            <span class="step-label">Confirm</span>
-        </div>
+        <div class="step pending"><div class="step-num">3</div><span class="step-label">Confirm</span></div>
     </div>
-
     <div class="checkout-layout">
         <div>
-            <!-- Delivery Summary -->
             <div class="delivery-info">
-                <h4>📦 Delivering to:</h4>
+                <h4><i class="fa-solid fa-location-dot"></i> Delivering to:</h4>
                 <div class="delivery-row">Name: <span>{{ info.first_name }} {{ info.last_name }}</span></div>
                 <div class="delivery-row">Address: <span>{{ info.address }}, {{ info.city }}</span></div>
                 <div class="delivery-row">Phone: <span>{{ info.phone }}</span></div>
-                <a href="/checkout" style="font-size:0.8rem; color:var(--hot-pink); text-decoration:none; font-weight:700;">Edit</a>
+                <a href="/checkout" style="font-size:0.8rem;color:var(--primary);text-decoration:none;font-weight:700;display:inline-block;margin-top:8px;">Edit</a>
             </div>
-
-            <!-- Payment Form -->
-            <form class="payment-form" method="POST" action="/checkout/payment">
+            <form class="payment-form" method="POST" action="/checkout/payment" id="paymentForm">
                 <div class="form-section">
-                    <div class="form-section-title">💳 Payment Information</div>
-                    <div class="card-icons">
-                        <span class="card-icon">VISA</span>
-                        <span class="card-icon">MC</span>
-                        <span class="card-icon">AMEX</span>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Card Number</label>
-                        <input type="text" name="card_number" class="form-input" placeholder="1234 5678 9012 3456" required maxlength="19" oninput="formatCard(this)">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Name on Card</label>
-                        <input type="text" name="card_name" class="form-input" placeholder="Full name as on card" required>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Expiration Date</label>
-                            <input type="text" name="expiry" class="form-input" placeholder="MM/YY" required maxlength="5" oninput="formatExpiry(this)">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">CVV</label>
-                            <input type="text" name="cvv" class="form-input" placeholder="123" required maxlength="4">
-                        </div>
+                    <div class="form-section-title"><i class="fa-solid fa-wallet"></i> Payment Method</div>
+                    <div class="payment-options">
+                        <label class="payment-option selected" id="opt-card">
+                            <input type="radio" name="payment_method" value="card_online" checked onchange="switchPayment(this)">
+                            <span class="payment-option-icon"><i class="fa-solid fa-credit-card"></i></span>
+                            <div class="payment-option-info">
+                                <div class="title">Pay by Card Online</div>
+                                <div class="desc">Visa, Mastercard, Amex — secure online payment</div>
+                            </div>
+                        </label>
+                        <label class="payment-option" id="opt-cash">
+                            <input type="radio" name="payment_method" value="cash_on_delivery" onchange="switchPayment(this)">
+                            <span class="payment-option-icon"><i class="fa-solid fa-money-bill-wave"></i></span>
+                            <div class="payment-option-info">
+                                <div class="title">Cash on Delivery</div>
+                                <div class="desc">Pay in cash when your order arrives</div>
+                            </div>
+                        </label>
+                        <label class="payment-option" id="opt-card-del">
+                            <input type="radio" name="payment_method" value="card_on_delivery" onchange="switchPayment(this)">
+                            <span class="payment-option-icon"><i class="fa-solid fa-credit-card"></i></span>
+                            <div class="payment-option-info">
+                                <div class="title">Card on Delivery</div>
+                                <div class="desc">Pay by card using a portable POS terminal on arrival</div>
+                            </div>
+                        </label>
                     </div>
                 </div>
 
-                <div class="security-note">
-                    🔒 Your payment information is encrypted and secure. We never store your card details.
+                <div id="codInfo" class="cod-info">
+                    <i class="fa-solid fa-circle-info"></i> <strong>No payment needed now.</strong> You will pay when your order is delivered. Please have the exact amount ready.
                 </div>
 
-                <!-- Order Summary inline -->
+                <div id="cardFields">
+                    <div class="form-section">
+                        <div class="form-section-title"><i class="fa-solid fa-credit-card"></i> Card Details</div>
+                        <div style="display:flex;gap:8px;margin-bottom:16px;">
+                            <span style="background:var(--primary-pale);border:1.5px solid var(--border);border-radius:6px;padding:4px 10px;font-size:0.78rem;font-weight:800;color:var(--text-muted);">VISA</span>
+                            <span style="background:var(--primary-pale);border:1.5px solid var(--border);border-radius:6px;padding:4px 10px;font-size:0.78rem;font-weight:800;color:var(--text-muted);">MC</span>
+                            <span style="background:var(--primary-pale);border:1.5px solid var(--border);border-radius:6px;padding:4px 10px;font-size:0.78rem;font-weight:800;color:var(--text-muted);">AMEX</span>
+                        </div>
+                        <div class="form-group"><label class="form-label">Card Number</label><input type="text" name="card_number" id="cardNumber" class="form-input" placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatCard(this)"></div>
+                        <div class="form-group"><label class="form-label">Name on Card</label><input type="text" name="card_name" class="form-input" placeholder="Full name as on card"></div>
+                        <div class="form-row">
+                            <div class="form-group"><label class="form-label">Expiration Date</label><input type="text" name="expiry" class="form-input" placeholder="MM/YY" maxlength="5" oninput="formatExpiry(this)"></div>
+                            <div class="form-group"><label class="form-label">CVV</label><input type="text" name="cvv" class="form-input" placeholder="123" maxlength="4"></div>
+                        </div>
+                    </div>
+                    <div class="security-note"><i class="fa-solid fa-shield-halved"></i> Your payment information is encrypted and secure. We never store your card details.</div>
+                </div>
+
                 <div class="form-section">
-                    <div class="form-section-title">📋 Order Summary</div>
-                    <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:8px;">
-                        <span style="color:var(--text-muted);">Subtotal</span>
-                        <span style="font-weight:700;">TT${{ "%.2f"|format(subtotal) }}</span>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:16px;">
-                        <span style="color:var(--text-muted);">Delivery</span>
-                        <span style="font-weight:700;">TT${{ "%.2f"|format(delivery) }}</span>
-                    </div>
-                    <hr style="border:none; border-top:1.5px solid var(--border); margin-bottom:16px;">
-                    <div style="display:flex; justify-content:space-between; font-size:1.05rem; font-weight:900; margin-bottom:24px;">
-                        <span>Total</span>
-                        <span style="color:var(--hot-pink);">TT${{ "%.2f"|format(total) }}</span>
-                    </div>
+                    <div class="form-section-title"><i class="fa-solid fa-list"></i> Order Summary</div>
+                    <div style="display:flex;justify-content:space-between;font-size:0.85rem;margin-bottom:8px;"><span style="color:var(--text-muted);">Subtotal</span><span style="font-weight:700;">TT${{ "%.2f"|format(subtotal) }}</span></div>
+                    <div style="display:flex;justify-content:space-between;font-size:0.85rem;margin-bottom:16px;"><span style="color:var(--text-muted);">Delivery</span><span style="font-weight:700;">TT${{ "%.2f"|format(delivery) }}</span></div>
+                    <hr style="border:none;border-top:1.5px solid var(--border);margin-bottom:16px;">
+                    <div style="display:flex;justify-content:space-between;font-size:1.05rem;font-weight:900;margin-bottom:24px;"><span>Total</span><span style="color:var(--primary);">TT${{ "%.2f"|format(total) }}</span></div>
                 </div>
-
-                <button type="submit" class="btn btn-primary btn-lg" style="width:100%;">
-                    Place Order — TT${{ "%.2f"|format(total) }}
-                </button>
-                <p style="text-align:center; font-size:0.78rem; color:var(--text-muted); margin-top:12px;">
-                    By placing your order you agree to our terms of service and privacy policy.
-                </p>
+                <button type="submit" class="btn btn-primary btn-lg" style="width:100%;" id="submitBtn">Place Order — TT${{ "%.2f"|format(total) }}</button>
+                <p style="text-align:center;font-size:0.78rem;color:var(--text-muted);margin-top:12px;">By placing your order you agree to our terms of service and privacy policy.</p>
             </form>
         </div>
-
-        <!-- Summary Sidebar -->
         <div class="checkout-summary">
-            <div style="font-family:'Playfair Display',serif; font-size:1.1rem; font-weight:700; margin-bottom:20px;">Your Items</div>
+            <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;margin-bottom:20px;">Your Items</div>
             {% for pid, item in cart.items() %}
             <div class="summary-item">
-                <div class="si-img" style="padding:0; overflow:hidden;">
-                    {% if item.get('image_url') %}
-                        <img src="{{ item.image_url }}" alt="{{ item.name }}" style="width:100%;height:100%;object-fit:cover;"
-                             onerror="this.onerror=null;this.style.display='none';">
-                    {% else %}
-                        <span>{{ item.emoji }}</span>
-                    {% endif %}
-                </div>
-                <div>
-                    <div class="si-name">{{ item.name }}</div>
-                    <div class="si-qty">Qty: {{ item.qty }}</div>
-                </div>
+                <div class="si-img">{% if item.get("image_url") %}<img src="{{ item.image_url }}" alt="{{ item.name }}" onerror="this.onerror=null;this.style.display='none';">{% endif %}</div>
+                <div><div class="si-name">{{ item.name }}</div><div class="si-qty">Qty: {{ item.qty }}</div></div>
                 <div class="si-price">TT${{ "%.2f"|format(item.price * item.qty) }}</div>
             </div>
             {% endfor %}
-            <hr style="border:none; border-top:1.5px solid var(--border); margin: 16px 0;">
-            <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:8px;">
-                <span style="color:var(--text-muted);">Subtotal</span>
-                <span style="font-weight:700;">TT${{ "%.2f"|format(subtotal) }}</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:16px;">
-                <span style="color:var(--text-muted);">Delivery</span>
-                <span style="font-weight:700;">TT${{ "%.2f"|format(delivery) }}</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; font-size:1.1rem; font-weight:900;">
-                <span>Total</span>
-                <span style="color:var(--hot-pink);">TT${{ "%.2f"|format(total) }}</span>
-            </div>
+            <hr style="border:none;border-top:1.5px solid var(--border);margin:16px 0;">
+            <div style="display:flex;justify-content:space-between;font-size:0.85rem;margin-bottom:8px;"><span style="color:var(--text-muted);">Subtotal</span><span style="font-weight:700;">TT${{ "%.2f"|format(subtotal) }}</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:0.85rem;margin-bottom:16px;"><span style="color:var(--text-muted);">Delivery</span><span style="font-weight:700;">TT${{ "%.2f"|format(delivery) }}</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:1.1rem;font-weight:900;"><span>Total</span><span style="color:var(--primary);">TT${{ "%.2f"|format(total) }}</span></div>
         </div>
     </div>
 </div>
 {% endblock %}
-
 {% block extra_scripts %}
 <script>
-function formatCard(input) {
-    let v = input.value.replace(/\D/g, '').substring(0, 16);
-    input.value = v.replace(/(.{4})/g, '$1 ').trim();
+function switchPayment(radio) {
+    document.querySelectorAll(".payment-option").forEach(o => o.classList.remove("selected"));
+    radio.closest(".payment-option").classList.add("selected");
+    const isCard = radio.value === "card_online";
+    document.getElementById("cardFields").style.display = isCard ? "block" : "none";
+    document.getElementById("codInfo").style.display = isCard ? "none" : "block";
+    const btn = document.getElementById("submitBtn");
+    btn.textContent = isCard ? "Place Order — TT${{ "%.2f"|format(total) }}" : "Confirm Order — TT${{ "%.2f"|format(total) }}";
+    const cn = document.getElementById("cardNumber");
+    if (cn) cn.required = isCard;
 }
-function formatExpiry(input) {
-    let v = input.value.replace(/\D/g, '').substring(0, 4);
-    if (v.length >= 2) v = v.substring(0,2) + '/' + v.substring(2);
-    input.value = v;
-}
+function formatCard(input) { let v = input.value.replace(/\D/g,"").substring(0,16); input.value = v.replace(/(.{4})/g,"$1 ").trim(); }
+function formatExpiry(input) { let v = input.value.replace(/\D/g,"").substring(0,4); if(v.length>=2) v=v.substring(0,2)+"/"+v.substring(2); input.value=v; }
 </script>
 {% endblock %}
