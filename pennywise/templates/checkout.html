@@ -1,191 +1,84 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% block title %}Checkout | Pennywise Cosmetics{% endblock %}
-
 {% block extra_head %}
 <style>
 .checkout-page { padding: 40px 0 80px; }
 .checkout-layout { display: grid; grid-template-columns: 1fr 380px; gap: 48px; align-items: start; }
-.checkout-heading { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; margin-bottom: 8px; }
-.checkout-steps {
-    display: flex; align-items: center; gap: 8px;
-    margin-bottom: 36px;
-}
-.step {
-    display: flex; align-items: center; gap: 6px;
-    font-size: 0.8rem; font-weight: 700;
-}
-.step-num {
-    width: 26px; height: 26px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.75rem; font-weight: 800;
-}
-.step.done .step-num { background: var(--success); color: white; }
-.step.active .step-num { background: var(--hot-pink); color: white; }
+.checkout-heading { font-family: "Playfair Display", serif; font-size: 1.8rem; font-weight: 700; margin-bottom: 8px; }
+.checkout-steps { display: flex; align-items: center; gap: 8px; margin-bottom: 36px; }
+.step { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 700; }
+.step-num { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 800; }
+.step.active .step-num { background: var(--primary); color: white; }
 .step.pending .step-num { background: var(--border); color: var(--text-muted); }
-.step.active .step-label { color: var(--hot-pink); }
+.step.active .step-label { color: var(--primary); }
 .step.pending .step-label { color: var(--text-muted); }
 .step-divider { flex: 1; height: 1.5px; background: var(--border); max-width: 60px; }
-
-.checkout-form {
-    background: white; border-radius: var(--radius);
-    border: 1.5px solid var(--border); padding: 32px;
-}
+.checkout-form { background: white; border-radius: var(--radius); border: 1.5px solid var(--border); padding: 32px; }
 .form-section { margin-bottom: 28px; }
-.form-section-title {
-    font-size: 0.85rem; font-weight: 800; text-transform: uppercase;
-    letter-spacing: 0.8px; color: var(--text-muted);
-    margin-bottom: 16px; padding-bottom: 8px;
-    border-bottom: 1.5px solid var(--border);
-}
+.form-section-title { font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1.5px solid var(--border); display: flex; align-items: center; gap: 8px; }
+.form-section-title i { color: var(--primary); }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .form-group { margin-bottom: 16px; }
 .form-label { font-size: 0.82rem; font-weight: 700; color: var(--text); display: block; margin-bottom: 6px; }
-.form-input {
-    width: 100%; padding: 12px 14px;
-    border: 1.5px solid var(--border); border-radius: var(--radius-sm);
-    font-family: 'Nunito', sans-serif; font-size: 0.9rem; outline: none;
-    color: var(--text); transition: border-color 0.2s; background: white;
-}
-.form-input:focus { border-color: var(--hot-pink); }
-.checkbox-label {
-    display: flex; align-items: center; gap: 10px;
-    font-size: 0.85rem; color: var(--text-muted); cursor: pointer;
-}
-.checkbox-label input { accent-color: var(--hot-pink); width: 16px; height: 16px; }
-
-/* Summary Sidebar */
-.checkout-summary {
-    background: white; border-radius: var(--radius);
-    border: 1.5px solid var(--border); padding: 28px;
-    position: sticky; top: 100px;
-}
-.summary-items { margin-bottom: 20px; }
-.summary-item {
-    display: flex; gap: 12px; align-items: center; padding: 10px 0;
-    border-bottom: 1px solid var(--border);
-}
+.form-input { width: 100%; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-family: "Nunito", sans-serif; font-size: 0.9rem; outline: none; color: var(--text); transition: border-color 0.2s; }
+.form-input:focus { border-color: var(--primary); }
+.checkbox-label { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; color: var(--text-muted); cursor: pointer; }
+.checkbox-label input { accent-color: var(--primary); width: 16px; height: 16px; }
+.checkout-summary { background: white; border-radius: var(--radius); border: 1.5px solid var(--border); padding: 28px; position: sticky; top: 100px; }
+.summary-item { display: flex; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
 .summary-item:last-child { border-bottom: none; }
-.si-img {
-    width: 44px; height: 44px; flex-shrink: 0;
-    border-radius: var(--radius-sm); border: 1.5px solid var(--border);
-    display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
-    background: var(--pale-pink);
-}
+.si-img { width: 44px; height: 44px; flex-shrink: 0; border-radius: var(--radius-sm); border: 1.5px solid var(--border); overflow: hidden; background: var(--primary-pale); }
+.si-img img { width: 100%; height: 100%; object-fit: cover; }
 .si-name { font-size: 0.8rem; font-weight: 700; flex: 1; }
 .si-qty { font-size: 0.75rem; color: var(--text-muted); }
-.si-price { font-size: 0.85rem; font-weight: 800; color: var(--hot-pink); }
-
-@media (max-width: 900px) {
-    .checkout-layout { grid-template-columns: 1fr; }
-    .checkout-summary { position: static; order: -1; }
-    .form-row { grid-template-columns: 1fr; }
-}
+.si-price { font-size: 0.85rem; font-weight: 800; color: var(--primary); }
+@media (max-width: 900px) { .checkout-layout { grid-template-columns: 1fr; } .checkout-summary { position: static; order: -1; } .form-row { grid-template-columns: 1fr; } }
 </style>
 {% endblock %}
-
 {% block content %}
 <div class="page-content checkout-page">
     <div class="checkout-heading">Checkout</div>
     <div class="checkout-steps">
-        <div class="step active">
-            <div class="step-num">1</div>
-            <span class="step-label">Delivery</span>
-        </div>
+        <div class="step active"><div class="step-num">1</div><span class="step-label">Delivery</span></div>
         <div class="step-divider"></div>
-        <div class="step pending">
-            <div class="step-num">2</div>
-            <span class="step-label">Payment</span>
-        </div>
+        <div class="step pending"><div class="step-num">2</div><span class="step-label">Payment</span></div>
         <div class="step-divider"></div>
-        <div class="step pending">
-            <div class="step-num">3</div>
-            <span class="step-label">Confirm</span>
-        </div>
+        <div class="step pending"><div class="step-num">3</div><span class="step-label">Confirm</span></div>
     </div>
-
     <div class="checkout-layout">
-        <!-- Form -->
         <div>
             <form class="checkout-form" method="POST" action="/checkout">
                 <div class="form-section">
-                    <div class="form-section-title">📧 Contact Information</div>
-                    <div class="form-group">
-                        <label class="form-label">Email Address</label>
-                        <input type="email" name="email" class="form-input" placeholder="you@example.com" required value="{{ info.get('email', '') }}">
-                    </div>
-                    <label class="checkbox-label">
-                        <input type="checkbox" name="newsletter" {% if info.get('newsletter') %}checked{% endif %}>
-                        Email me with news and exclusive offers
-                    </label>
+                    <div class="form-section-title"><i class="fa-solid fa-envelope"></i> Contact Information</div>
+                    <div class="form-group"><label class="form-label">Email Address</label><input type="email" name="email" class="form-input" placeholder="you@example.com" required value="{{ info.get('email', '') }}"></div>
+                    <label class="checkbox-label"><input type="checkbox" name="newsletter" {% if info.get("newsletter") %}checked{% endif %}> Email me with news and exclusive offers</label>
                 </div>
-
                 <div class="form-section">
-                    <div class="form-section-title">🏠 Delivery Address</div>
+                    <div class="form-section-title"><i class="fa-solid fa-location-dot"></i> Delivery Address</div>
                     <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">First Name</label>
-                            <input type="text" name="first_name" class="form-input" placeholder="First name" required value="{{ info.get('first_name', '') }}">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Last Name</label>
-                            <input type="text" name="last_name" class="form-input" placeholder="Last name" required value="{{ info.get('last_name', '') }}">
-                        </div>
+                        <div class="form-group"><label class="form-label">First Name</label><input type="text" name="first_name" class="form-input" placeholder="First name" required value="{{ info.get('first_name', '') }}"></div>
+                        <div class="form-group"><label class="form-label">Last Name</label><input type="text" name="last_name" class="form-input" placeholder="Last name" required value="{{ info.get('last_name', '') }}"></div>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Address</label>
-                        <input type="text" name="address" class="form-input" placeholder="Street address" required value="{{ info.get('address', '') }}">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">City / Town</label>
-                        <input type="text" name="city" class="form-input" placeholder="e.g. Chaguanas, Port of Spain" required value="{{ info.get('city', '') }}">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Phone Number</label>
-                        <input type="tel" name="phone" class="form-input" placeholder="e.g. 868-xxx-xxxx" required value="{{ info.get('phone', '') }}">
-                    </div>
+                    <div class="form-group"><label class="form-label">Address</label><input type="text" name="address" class="form-input" placeholder="Street address" required value="{{ info.get('address', '') }}"></div>
+                    <div class="form-group"><label class="form-label">City / Town</label><input type="text" name="city" class="form-input" placeholder="e.g. Chaguanas, Port of Spain" required value="{{ info.get('city', '') }}"></div>
+                    <div class="form-group"><label class="form-label">Phone Number</label><input type="tel" name="phone" class="form-input" placeholder="e.g. 868-xxx-xxxx" required value="{{ info.get('phone', '') }}"></div>
                 </div>
-
-                <button type="submit" class="btn btn-primary btn-lg" style="width:100%;">
-                    Continue to Payment
-                </button>
+                <button type="submit" class="btn btn-primary btn-lg" style="width:100%;">Continue to Payment</button>
             </form>
         </div>
-
-        <!-- Summary -->
         <div class="checkout-summary">
-            <div class="summary-title" style="font-family:'Playfair Display',serif; font-size:1.1rem; font-weight:700; margin-bottom:20px;">Order Summary</div>
-            <div class="summary-items">
-                {% for pid, item in cart.items() %}
-                <div class="summary-item">
-                    <div class="si-img" style="padding:0; overflow:hidden;">
-                        {% if item.get('image_url') %}
-                            <img src="{{ item.image_url }}" alt="{{ item.name }}" style="width:100%;height:100%;object-fit:cover;"
-                                 onerror="this.onerror=null;this.style.display='none';">
-                        {% else %}
-                            <span>{{ item.emoji }}</span>
-                        {% endif %}
-                    </div>
-                    <div>
-                        <div class="si-name">{{ item.name }}</div>
-                        <div class="si-qty">Qty: {{ item.qty }}</div>
-                    </div>
-                    <div class="si-price">TT${{ "%.2f"|format(item.price * item.qty) }}</div>
-                </div>
-                {% endfor %}
+            <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;margin-bottom:20px;">Order Summary</div>
+            {% for pid, item in cart.items() %}
+            <div class="summary-item">
+                <div class="si-img">{% if item.get("image_url") %}<img src="{{ item.image_url }}" alt="{{ item.name }}" onerror="this.onerror=null;this.style.display='none';">{% endif %}</div>
+                <div><div class="si-name">{{ item.name }}</div><div class="si-qty">Qty: {{ item.qty }}</div></div>
+                <div class="si-price">TT${{ "%.2f"|format(item.price * item.qty) }}</div>
             </div>
-            <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:8px;">
-                <span style="color:var(--text-muted);">Subtotal</span>
-                <span style="font-weight:700;">TT${{ "%.2f"|format(cart_subtotal) }}</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:16px;">
-                <span style="color:var(--text-muted);">Delivery</span>
-                <span style="font-weight:700;">TT$30.00</span>
-            </div>
-            <hr style="border:none; border-top:1.5px solid var(--border); margin-bottom:16px;">
-            <div style="display:flex; justify-content:space-between; font-size:1rem; font-weight:900;">
-                <span>Total</span>
-                <span style="color:var(--hot-pink); font-size:1.2rem;">TT${{ "%.2f"|format(cart_subtotal + 30) }}</span>
-            </div>
+            {% endfor %}
+            <hr style="border:none;border-top:1.5px solid var(--border);margin:16px 0;">
+            <div style="display:flex;justify-content:space-between;font-size:0.85rem;margin-bottom:8px;"><span style="color:var(--text-muted);">Subtotal</span><span style="font-weight:700;">TT${{ "%.2f"|format(cart_subtotal) }}</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:0.85rem;margin-bottom:16px;"><span style="color:var(--text-muted);">Delivery</span><span style="font-weight:700;">TT$30.00</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:1rem;font-weight:900;"><span>Total</span><span style="color:var(--primary);font-size:1.2rem;">TT${{ "%.2f"|format(cart_subtotal + 30) }}</span></div>
         </div>
     </div>
 </div>

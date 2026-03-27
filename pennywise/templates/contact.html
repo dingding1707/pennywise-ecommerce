@@ -1,6 +1,5 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% block title %}Contact Us | Pennywise Cosmetics{% endblock %}
-
 {% block extra_head %}
 <style>
 .contact-page { padding: 60px 0 100px; }
@@ -8,81 +7,61 @@
 .contact-form-card { background: white; border-radius: var(--radius); border: 1.5px solid var(--border); padding: 40px; }
 .form-group { margin-bottom: 20px; }
 .form-label { font-size: 0.82rem; font-weight: 700; color: var(--text); display: block; margin-bottom: 6px; }
-.form-input { width: 100%; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-family: 'Nunito', sans-serif; font-size: 0.9rem; outline: none; color: var(--text); transition: border-color 0.2s; }
-.form-input:focus { border-color: var(--hot-pink); }
+.form-input { width: 100%; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-family: "Nunito", sans-serif; font-size: 0.9rem; outline: none; color: var(--text); transition: border-color 0.2s; }
+.form-input:focus { border-color: var(--primary); }
 .form-textarea { min-height: 140px; resize: vertical; }
-
-.contact-info h3 { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; margin-bottom: 20px; }
 .contact-item { display: flex; gap: 16px; margin-bottom: 24px; align-items: flex-start; }
-.contact-icon { width: 44px; height: 44px; background: var(--light-pink); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+.contact-icon { width: 44px; height: 44px; background: var(--primary-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; color: var(--primary); }
 .contact-item-text .label { font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 4px; }
 .contact-item-text .value { font-size: 0.9rem; font-weight: 600; }
-.contact-item-text a { color: var(--hot-pink); text-decoration: none; }
-
-.pharmacy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
-.pharmacy-entry { background: var(--pale-pink); border-radius: var(--radius-sm); padding: 8px 12px; font-size: 0.8rem; font-weight: 600; }
+.contact-item-text a { color: var(--primary); text-decoration: none; }
+.pharmacy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+.pharmacy-entry { background: var(--primary-pale); border-radius: var(--radius-sm); padding: 8px 12px; font-size: 0.8rem; font-weight: 600; }
+@media (max-width: 768px) { .contact-grid { grid-template-columns: 1fr; } }
 </style>
 {% endblock %}
-
 {% block content %}
 <div class="page-content contact-page">
     <div class="section-header">
         <h1 class="section-title">Contact Us</h1>
-        <p class="section-subtitle">We're here to help — reach out anytime</p>
+        <p class="section-subtitle">We are here to help — reach out anytime</p>
     </div>
-
     <div class="contact-grid">
         <div class="contact-form-card">
-            <h3 style="font-family:'Playfair Display',serif; font-size:1.2rem; margin-bottom:24px;">Send us a Message</h3>
+            <h3 style="font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:24px;">Send us a Message</h3>
             <form method="POST">
-                <div class="form-group">
-                    <label class="form-label">Your Name</label>
-                    <input type="text" name="name" class="form-input" placeholder="Full name" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Email Address</label>
-                    <input type="email" name="email" class="form-input" placeholder="you@example.com" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Phone Number</label>
-                    <input type="tel" name="phone" class="form-input" placeholder="868-xxx-xxxx">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Message</label>
-                    <textarea name="message" class="form-input form-textarea" placeholder="How can we help you?" required></textarea>
-                </div>
+                <div class="form-group"><label class="form-label">Your Name</label><input type="text" name="name" class="form-input" placeholder="Full name" required></div>
+                <div class="form-group"><label class="form-label">Email Address</label><input type="email" name="email" class="form-input" placeholder="you@example.com" required></div>
+                <div class="form-group"><label class="form-label">Phone Number</label><input type="tel" name="phone" class="form-input" placeholder="868-xxx-xxxx"></div>
+                <div class="form-group"><label class="form-label">Message</label><textarea name="message" class="form-input form-textarea" placeholder="How can we help you?" required></textarea></div>
                 <button type="submit" class="btn btn-primary" style="width:100%;">Send Message</button>
             </form>
         </div>
-
-        <div class="contact-info">
-            <h3>Get in Touch</h3>
+        <div>
+            <h3 style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;margin-bottom:20px;">Get in Touch</h3>
             <div class="contact-item">
-                <div class="contact-icon"><i class="fa fa-phone"></i></div>
+                <div class="contact-icon"><i class="fa-solid fa-phone"></i></div>
                 <div class="contact-item-text">
                     <div class="label">Phone</div>
-                    <div class="value">
-                        <a href="tel:8686405991">(868) 640-5991</a><br>
-                        <a href="tel:8686406165">(868) 640-6165</a>
-                    </div>
+                    <div class="value"><a href="tel:8686405991">(868) 640-5991</a><br><a href="tel:8686406165">(868) 640-6165</a></div>
                 </div>
             </div>
             <div class="contact-item">
-                <div class="contact-icon"><i class="fa fa-map-marker-alt"></i></div>
+                <div class="contact-icon"><i class="fa-solid fa-location-dot"></i></div>
                 <div class="contact-item-text">
                     <div class="label">Head Office</div>
-                    <div class="value">Trincity Industrial Estate<br>Macoya, Trinidad & Tobago</div>
+                    <div class="value">Trincity Industrial Estate<br>Macoya, Trinidad &amp; Tobago</div>
                 </div>
             </div>
             <div class="contact-item">
-                <div class="contact-icon"><i class="fa fa-clock"></i></div>
+                <div class="contact-icon"><i class="fa-solid fa-clock"></i></div>
                 <div class="contact-item-text">
                     <div class="label">Store Hours</div>
-                    <div class="value">Mon–Sat: 8:00am – 8:00pm<br>Sun & Public Holidays: 9:00am – 6:00pm</div>
+                    <div class="value">Mon&ndash;Sat: 8:00am &ndash; 8:00pm<br>Sun &amp; Public Holidays: 9:00am &ndash; 6:00pm</div>
                 </div>
             </div>
             <div class="contact-item">
-                <div class="contact-icon"><i class="fa fa-prescription-bottle-alt"></i></div>
+                <div class="contact-icon"><i class="fa-solid fa-pills"></i></div>
                 <div class="contact-item-text">
                     <div class="label">Pharmacy WhatsApp Numbers</div>
                     <div class="value">

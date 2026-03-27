@@ -1,211 +1,128 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% block title %}Shopping Cart | Pennywise Cosmetics{% endblock %}
-
 {% block extra_head %}
 <style>
 .cart-page { padding: 40px 0 80px; }
-.cart-heading { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; margin-bottom: 32px; }
+.cart-heading { font-family: "Playfair Display", serif; font-size: 2rem; font-weight: 700; margin-bottom: 32px; display: flex; align-items: center; gap: 12px; }
+.cart-heading i { color: var(--primary); }
 .cart-layout { display: grid; grid-template-columns: 1fr 380px; gap: 32px; align-items: start; }
-
-/* Cart Items */
 .cart-items { display: flex; flex-direction: column; gap: 16px; }
-.cart-item {
-    background: white; border-radius: var(--radius);
-    border: 1.5px solid var(--border); padding: 20px;
-    display: flex; gap: 20px; align-items: center;
-    transition: box-shadow 0.2s;
-}
+.cart-item { background: white; border-radius: var(--radius); border: 1.5px solid var(--border); padding: 20px; display: flex; gap: 20px; align-items: center; transition: box-shadow 0.2s; }
 .cart-item:hover { box-shadow: var(--shadow); }
-.cart-item-img {
-    width: 80px; height: 80px; flex-shrink: 0;
-    border-radius: var(--radius-sm);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 2.5rem;
-    border: 1.5px solid var(--border);
-}
+.cart-item-img { width: 80px; height: 80px; flex-shrink: 0; border-radius: var(--radius-sm); overflow: hidden; border: 1.5px solid var(--border); background: var(--primary-pale); }
+.cart-item-img img { width: 100%; height: 100%; object-fit: cover; }
 .cart-item-info { flex: 1; }
 .cart-item-name { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
-.cart-item-price { font-size: 0.9rem; color: var(--hot-pink); font-weight: 800; margin-bottom: 12px; }
+.cart-item-price { font-size: 0.9rem; color: var(--primary); font-weight: 800; margin-bottom: 12px; }
 .cart-item-controls { display: flex; align-items: center; gap: 12px; }
-.qty-controls { display: flex; align-items: center; gap: 0; }
-.qty-btn-sm {
-    width: 32px; height: 32px;
-    border: 1.5px solid var(--border); background: white;
-    font-size: 1rem; cursor: pointer; transition: all 0.2s;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 700;
-}
+.qty-controls { display: flex; align-items: center; }
+.qty-btn-sm { width: 32px; height: 32px; border: 1.5px solid var(--border); background: white; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
 .qty-btn-sm:first-child { border-radius: var(--radius-sm) 0 0 var(--radius-sm); }
 .qty-btn-sm:last-child { border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
-.qty-btn-sm:hover { background: var(--light-pink); border-color: var(--hot-pink); color: var(--hot-pink); }
-.qty-display {
-    width: 44px; height: 32px;
-    border: 1.5px solid var(--border); border-left: none; border-right: none;
-    text-align: center; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.9rem;
-    display: flex; align-items: center; justify-content: center;
-}
-.remove-btn {
-    background: none; border: none; cursor: pointer;
-    color: var(--text-muted); font-size: 0.8rem; font-weight: 600;
-    padding: 6px; border-radius: var(--radius-sm);
-    transition: all 0.2s; display: flex; align-items: center; gap: 4px;
-}
+.qty-btn-sm:hover { background: var(--primary-light); border-color: var(--primary); color: var(--primary); }
+.qty-display { width: 44px; height: 32px; border: 1.5px solid var(--border); border-left: none; border-right: none; text-align: center; font-weight: 700; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; }
+.remove-btn { background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 0.8rem; font-weight: 600; padding: 6px 8px; border-radius: var(--radius-sm); transition: all 0.2s; display: flex; align-items: center; gap: 4px; }
 .remove-btn:hover { color: var(--error); background: #FADBD8; }
 .cart-item-total { font-size: 1.05rem; font-weight: 900; color: var(--text); text-align: right; white-space: nowrap; }
-
-/* Order Summary */
-.order-summary {
-    background: white; border-radius: var(--radius);
-    border: 1.5px solid var(--border); padding: 28px;
-    position: sticky; top: 100px;
-}
-.summary-title { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; margin-bottom: 24px; }
-.summary-row {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 12px; font-size: 0.9rem;
-}
+.order-summary { background: white; border-radius: var(--radius); border: 1.5px solid var(--border); padding: 28px; position: sticky; top: 100px; }
+.summary-title { font-family: "Playfair Display", serif; font-size: 1.2rem; font-weight: 700; margin-bottom: 24px; }
+.summary-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 0.9rem; }
 .summary-row .label { color: var(--text-muted); }
 .summary-row .value { font-weight: 700; }
 .summary-divider { border: none; border-top: 1.5px solid var(--border); margin: 16px 0; }
-.summary-total {
-    display: flex; justify-content: space-between; align-items: center;
-    font-size: 1.1rem; font-weight: 900; margin-bottom: 24px;
-}
-.summary-total .total-price { color: var(--hot-pink); font-size: 1.3rem; }
-
-.checkout-note { font-size: 0.78rem; color: var(--text-muted); text-align: center; margin-top: 12px; }
+.summary-total { display: flex; justify-content: space-between; align-items: center; font-size: 1.1rem; font-weight: 900; margin-bottom: 24px; }
+.summary-total .total-price { color: var(--primary); font-size: 1.3rem; }
 .trust-row { display: flex; justify-content: center; gap: 16px; margin-top: 16px; flex-wrap: wrap; }
 .trust-mini { font-size: 0.75rem; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
-
-/* Empty Cart */
+.trust-mini i { color: var(--primary); }
 .empty-cart { text-align: center; padding: 80px 20px; }
-.empty-cart .icon { font-size: 5rem; margin-bottom: 20px; }
-.empty-cart h2 { font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 8px; }
+.empty-cart .icon { font-size: 4rem; color: var(--border); margin-bottom: 20px; }
+.empty-cart h2 { font-family: "Playfair Display", serif; font-size: 1.5rem; margin-bottom: 8px; }
 .empty-cart p { color: var(--text-muted); margin-bottom: 32px; }
-
-@media (max-width: 900px) {
-    .cart-layout { grid-template-columns: 1fr; }
-    .order-summary { position: static; }
-}
+@media (max-width: 900px) { .cart-layout { grid-template-columns: 1fr; } .order-summary { position: static; } }
 </style>
 {% endblock %}
-
 {% block content %}
 <div class="page-content cart-page">
-    <h1 class="cart-heading">🛒 Shopping Cart</h1>
-
+    <h1 class="cart-heading"><i class="fa-solid fa-cart-shopping"></i> Shopping Cart</h1>
     {% if cart %}
     <div class="cart-layout">
-        <!-- Items -->
         <div class="cart-items" id="cartItems">
             {% for pid, item in cart.items() %}
             <div class="cart-item" id="item-{{ pid }}">
-                <div class="cart-item-img" style="background: var(--pale-pink); padding:0; overflow:hidden;">
-                    {% if item.get('image_url') %}
-                        <img src="{{ item.image_url }}" alt="{{ item.name }}" style="width:100%;height:100%;object-fit:cover;"
-                             onerror="this.onerror=null;this.style.display='none';">
-                    {% else %}
-                        <span style="font-size:2rem;">{{ item.emoji }}</span>
-                    {% endif %}
+                <div class="cart-item-img">
+                    {% if item.get("image_url") %}<img src="{{ item.image_url }}" alt="{{ item.name }}" onerror="this.onerror=null;this.style.display='none';">{% endif %}
                 </div>
                 <div class="cart-item-info">
                     <div class="cart-item-name">{{ item.name }}</div>
                     <div class="cart-item-price">TT${{ "%.2f"|format(item.price) }} each</div>
                     <div class="cart-item-controls">
                         <div class="qty-controls">
-                            <button class="qty-btn-sm" onclick="updateItem('{{ pid }}', {{ item.qty - 1 }})">−</button>
+                            <button class="qty-btn-sm" onclick="updateItem('{{ pid }}', {{ item.qty - 1 }})"><i class="fa-solid fa-minus"></i></button>
                             <div class="qty-display" id="qty-{{ pid }}">{{ item.qty }}</div>
-                            <button class="qty-btn-sm" onclick="updateItem('{{ pid }}', {{ item.qty + 1 }})">+</button>
+                            <button class="qty-btn-sm" onclick="updateItem('{{ pid }}', {{ item.qty + 1 }})"><i class="fa-solid fa-plus"></i></button>
                         </div>
-                        <button class="remove-btn" onclick="removeItem('{{ pid }}')">🗑️ Remove</button>
+                        <button class="remove-btn" onclick="removeItem('{{ pid }}')"><i class="fa-solid fa-trash"></i> Remove</button>
                     </div>
                 </div>
                 <div class="cart-item-total" id="total-{{ pid }}">TT${{ "%.2f"|format(item.price * item.qty) }}</div>
             </div>
             {% endfor %}
         </div>
-
-        <!-- Summary -->
         <div class="order-summary">
             <div class="summary-title">Order Summary</div>
-            <div class="summary-row">
-                <span class="label">Subtotal</span>
-                <span class="value" id="summarySubtotal">TT${{ "%.2f"|format(cart_subtotal) }}</span>
-            </div>
-            <div class="summary-row">
-                <span class="label">Delivery</span>
-                <span class="value">TT$30.00</span>
-            </div>
+            <div class="summary-row"><span class="label">Subtotal</span><span class="value" id="summarySubtotal">TT${{ "%.2f"|format(cart_subtotal) }}</span></div>
+            <div class="summary-row"><span class="label">Delivery</span><span class="value">TT$30.00</span></div>
             <hr class="summary-divider">
-            <div class="summary-total">
-                <span>Total</span>
-                <span class="total-price" id="summaryTotal">TT${{ "%.2f"|format(cart_subtotal + 30) }}</span>
-            </div>
-            <a href="/checkout" class="btn btn-primary btn-lg" style="width:100%; text-align:center;">
-                Proceed to Checkout →
-            </a>
-            <p class="checkout-note">Taxes and delivery calculated at checkout</p>
+            <div class="summary-total"><span>Total</span><span class="total-price" id="summaryTotal">TT${{ "%.2f"|format(cart_subtotal + 30) }}</span></div>
+            <a href="/checkout" class="btn btn-primary btn-lg" style="width:100%;text-align:center;">Proceed to Checkout</a>
+            <p style="text-align:center;font-size:0.78rem;color:var(--text-muted);margin-top:12px;">Taxes and delivery calculated at checkout</p>
             <div class="trust-row">
-                <div class="trust-mini">🔒 Secure</div>
-                <div class="trust-mini">✅ Authentic</div>
-                <div class="trust-mini">↩️ Easy Returns</div>
+                <div class="trust-mini"><i class="fa-solid fa-lock"></i> Secure</div>
+                <div class="trust-mini"><i class="fa-solid fa-circle-check"></i> Authentic</div>
+                <div class="trust-mini"><i class="fa-solid fa-rotate-left"></i> Easy Returns</div>
             </div>
         </div>
     </div>
     {% else %}
     <div class="empty-cart">
-        <div class="icon">🛒</div>
+        <div class="icon"><i class="fa-solid fa-cart-shopping"></i></div>
         <h2>Your cart is currently empty</h2>
-        <p>Add some cosmetics to get started!</p>
+        <p>Add some products to get started!</p>
         <a href="/products" class="btn btn-primary btn-lg">Continue Shopping</a>
     </div>
     {% endif %}
 </div>
 {% endblock %}
-
 {% block extra_scripts %}
 <script>
 function updateItem(pid, qty) {
-    fetch('/api/cart/update', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({product_id: pid, qty: qty})
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (qty <= 0) {
-            document.getElementById('item-' + pid)?.remove();
-        } else {
-            document.getElementById('qty-' + pid).textContent = qty;
-            // Update item total
-            const priceEl = document.querySelector('#item-' + pid + ' .cart-item-price');
+    fetch("/api/cart/update", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({product_id: pid, qty: qty}) })
+    .then(r=>r.json()).then(data => {
+        if (qty <= 0) { document.getElementById("item-"+pid)?.remove(); }
+        else {
+            document.getElementById("qty-"+pid).textContent = qty;
+            const priceEl = document.querySelector("#item-"+pid+" .cart-item-price");
             if (priceEl) {
-                const priceStr = priceEl.textContent.replace('TT$', '').replace(' each', '');
-                const price = parseFloat(priceStr);
-                document.getElementById('total-' + pid).textContent = 'TT$' + (price * qty).toFixed(2);
+                const price = parseFloat(priceEl.textContent.replace("TT$","").replace(" each",""));
+                document.getElementById("total-"+pid).textContent = "TT$"+(price*qty).toFixed(2);
             }
         }
-        document.getElementById('summarySubtotal').textContent = 'TT$' + data.subtotal.toFixed(2);
-        document.getElementById('summaryTotal').textContent = 'TT$' + data.total.toFixed(2);
+        document.getElementById("summarySubtotal").textContent = "TT$"+data.subtotal.toFixed(2);
+        document.getElementById("summaryTotal").textContent = "TT$"+data.total.toFixed(2);
         updateCartBadge(data.count);
         if (data.count === 0) location.reload();
     });
 }
-
 function removeItem(pid) {
-    fetch('/api/cart/remove', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({product_id: pid})
-    })
-    .then(r => r.json())
-    .then(data => {
-        const el = document.getElementById('item-' + pid);
-        if (el) { el.style.opacity = '0'; setTimeout(() => el.remove(), 300); }
-        document.getElementById('summarySubtotal').textContent = 'TT$' + data.subtotal.toFixed(2);
-        document.getElementById('summaryTotal').textContent = 'TT$' + data.total.toFixed(2);
+    fetch("/api/cart/remove", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({product_id: pid}) })
+    .then(r=>r.json()).then(data => {
+        const el = document.getElementById("item-"+pid);
+        if (el) { el.style.opacity="0"; el.style.transition="opacity 0.3s"; setTimeout(()=>el.remove(),300); }
+        document.getElementById("summarySubtotal").textContent = "TT$"+data.subtotal.toFixed(2);
+        document.getElementById("summaryTotal").textContent = "TT$"+data.total.toFixed(2);
         updateCartBadge(data.count);
-        if (data.count === 0) setTimeout(() => location.reload(), 400);
+        if (data.count === 0) setTimeout(()=>location.reload(), 400);
     });
 }
 </script>
