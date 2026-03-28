@@ -9,10 +9,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root {
-            --primary: #E8735A;
-            --primary-dark: #C4533A;
-            --primary-light: #FCEAE5;
-            --primary-pale: #FFF6F3;
+            --primary: #FF91A4;
+            --primary-dark: #D16B7B;
+            --primary-light: #FFE3EA;
+            --primary-pale: #FFF6FA;
             --bg: #FFFAF8;
             --white: #FFFFFF;
             --text: #2C1A14;
@@ -20,14 +20,14 @@
             --border: #F0C0B0;
             --success: #27AE60;
             --error: #E74C3C;
-            --shadow: 0 4px 24px rgba(232,115,90,0.10);
-            --shadow-lg: 0 8px 40px rgba(232,115,90,0.15);
+            --shadow: 0 4px 24px rgba(255,145,164,0.10);
+            --shadow-lg: 0 8px 40px rgba(255,145,164,0.15);
             --radius: 14px;
             --radius-sm: 8px;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: "Nunito", sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-        .navbar { background: var(--white); border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 200; padding: 0 24px; box-shadow: 0 2px 12px rgba(232,115,90,0.08); }
+        .navbar { background: var(--white); border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 200; padding: 0 24px; box-shadow: 0 2px 12px rgba(255,145,164,0.08); }
         .nav-inner { max-width: 1280px; margin: 0 auto; display: flex; align-items: center; gap: 20px; height: 68px; }
         .nav-logo { font-family: "Playfair Display", serif; font-style: italic; font-size: 1.45rem; font-weight: 700; color: var(--primary); text-decoration: none; white-space: nowrap; letter-spacing: -0.5px; flex-shrink: 0; line-height: 1.2; }
         .nav-logo span { color: var(--primary-dark); }
@@ -44,7 +44,7 @@
         .nav-cats-inner { max-width: 1280px; margin: 0 auto; display: flex; gap: 0; padding: 0 24px; overflow-x: auto; }
         .nav-cats-inner::-webkit-scrollbar { display: none; }
         .nav-cat { text-decoration: none; color: var(--text-muted); font-size: 0.8rem; font-weight: 700; padding: 10px 16px; white-space: nowrap; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid transparent; transition: all 0.2s; }
-        .nav-cat:hover, .nav-cat.active { color: var(--primary); border-bottom-color: var(--primary); background: rgba(232,115,90,0.05); }
+        .nav-cat:hover, .nav-cat.active { color: var(--primary); border-bottom-color: var(--primary); background: rgba(255,145,164,0.05); }
         .flash-container { max-width: 1280px; margin: 16px auto 0; padding: 0 24px; }
         .flash { padding: 12px 20px; border-radius: var(--radius-sm); font-size: 0.875rem; font-weight: 600; margin-bottom: 8px; animation: slideDown 0.3s ease; }
         .flash.success { background: #D5F5E3; color: #1D8348; border: 1px solid #A9DFBF; }
@@ -56,7 +56,7 @@
         .page-content { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
         .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 28px; border-radius: 100px; font-family: "Nunito", sans-serif; font-size: 0.9rem; font-weight: 700; cursor: pointer; border: none; text-decoration: none; transition: all 0.2s; letter-spacing: 0.3px; }
         .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); box-shadow: 0 2px 8px rgba(232,115,90,0.25); }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); box-shadow: 0 2px 8px rgba(255,145,164,0.25); }
         .btn-outline { background: transparent; color: var(--primary); border: 2px solid var(--primary); }
         .btn-outline:hover { background: var(--primary-light); }
         .btn-sm { padding: 8px 18px; font-size: 0.8rem; }
