@@ -4,6 +4,7 @@ import hashlib
 import os
 import json
 from datetime import datetime
+import copy
 
 app = Flask(__name__)
 app.secret_key = 'pennywise_cosmetics_secret_2024'
@@ -215,11 +216,11 @@ def get_cart():
     return session.get('cart', {})
 
 def cart_count():
-    cart = get_cart()
+    cart = copy.deepcopy(get_cart())
     return sum(item['qty'] for item in cart.values())
 
 def cart_subtotal():
-    cart = get_cart()
+    cart = copy.deepcopy(get_cart())
     return sum(item['price'] * item['qty'] for item in cart.values())
 
 def get_favourites():

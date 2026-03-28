@@ -58,9 +58,9 @@
                     <div class="cart-item-price">TT${{ "%.2f"|format(item.price) }} each</div>
                     <div class="cart-item-controls">
                         <div class="qty-controls">
-                            <button class="qty-btn-sm" onclick="updateItem('{{ pid }}', {{ item.qty - 1 }})"><i class="fa-solid fa-minus"></i></button>
+                            <button class="qty-btn-sm" onclick="updateItem('{{ pid }}', getCurrentQty('{{ pid }}') - 1)"><i class="fa-solid fa-minus"></i></button>
                             <div class="qty-display" id="qty-{{ pid }}">{{ item.qty }}</div>
-                            <button class="qty-btn-sm" onclick="updateItem('{{ pid }}', {{ item.qty + 1 }})"><i class="fa-solid fa-plus"></i></button>
+                            <button class="qty-btn-sm" onclick="updateItem('{{ pid }}', getCurrentQty('{{ pid }}') + 1)"><i class="fa-solid fa-plus"></i></button>
                         </div>
                         <button class="remove-btn" onclick="removeItem('{{ pid }}')"><i class="fa-solid fa-trash"></i> Remove</button>
                     </div>
@@ -96,6 +96,9 @@
 {% endblock %}
 {% block extra_scripts %}
 <script>
+function getCurrentQty(pid) {
+    return parseInt(document.getElementById("qty-"+pid).textContent, 10);
+}
 function updateItem(pid, qty) {
     fetch("/api/cart/update", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({product_id: pid, qty: qty}) })
     .then(r=>r.json()).then(data => {
